@@ -1,0 +1,36 @@
+[configuration]
+
+entry_symbol = "godot_julia_library_init"
+compatibility_minimum = "4.7"
+; The embedded Julia runtime cannot be unloaded, so the library must not be hot-reloaded.
+reloadable = false
+
+[icons]
+
+JuliaScript = "res://addons/godot_julia/icons/JuliaScript.svg"
+
+[libraries]
+
+windows.editor.x86_64 = "res://addons/godot_julia/bin/libgodot_julia.windows.editor.x86_64.dll"
+windows.debug.x86_64 = "res://addons/godot_julia/bin/libgodot_julia.windows.template_debug.x86_64.dll"
+windows.release.x86_64 = "res://addons/godot_julia/bin/libgodot_julia.windows.template_release.x86_64.dll"
+windows.editor.double.x86_64 = "res://addons/godot_julia/bin/libgodot_julia.windows.editor.double.x86_64.dll"
+windows.debug.double.x86_64 = "res://addons/godot_julia/bin/libgodot_julia.windows.template_debug.double.x86_64.dll"
+windows.release.double.x86_64 = "res://addons/godot_julia/bin/libgodot_julia.windows.template_release.double.x86_64.dll"
+windows.editor.arm64 = "res://addons/godot_julia/bin/libgodot_julia.windows.editor.arm64.dll"
+windows.debug.arm64 = "res://addons/godot_julia/bin/libgodot_julia.windows.template_debug.arm64.dll"
+windows.release.arm64 = "res://addons/godot_julia/bin/libgodot_julia.windows.template_release.arm64.dll"
+
+linux.editor.x86_64 = "res://addons/godot_julia/bin/libgodot_julia.linux.editor.x86_64.so"
+linux.debug.x86_64 = "res://addons/godot_julia/bin/libgodot_julia.linux.template_debug.x86_64.so"
+linux.release.x86_64 = "res://addons/godot_julia/bin/libgodot_julia.linux.template_release.x86_64.so"
+linux.editor.double.x86_64 = "res://addons/godot_julia/bin/libgodot_julia.linux.editor.double.x86_64.so"
+linux.debug.double.x86_64 = "res://addons/godot_julia/bin/libgodot_julia.linux.template_debug.double.x86_64.so"
+linux.release.double.x86_64 = "res://addons/godot_julia/bin/libgodot_julia.linux.template_release.double.x86_64.so"
+linux.editor.arm64 = "res://addons/godot_julia/bin/libgodot_julia.linux.editor.arm64.so"
+linux.debug.arm64 = "res://addons/godot_julia/bin/libgodot_julia.linux.template_debug.arm64.so"
+linux.release.arm64 = "res://addons/godot_julia/bin/libgodot_julia.linux.template_release.arm64.so"
+
+macos.editor = "res://addons/godot_julia/bin/libgodot_julia.macos.editor.framework"
+macos.debug = "res://addons/godot_julia/bin/libgodot_julia.macos.template_debug.framework"
+macos.release = "res://addons/godot_julia/bin/libgodot_julia.macos.template_release.framework"

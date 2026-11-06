@@ -1,0 +1,25 @@
+# ADR 0010: Signals, the main-thread task scheduler and worker threads
+
+- Status: Accepted
+- Date: 2026-11-07
+
+## Context
+
+Phase 10 ports `Signal.cs`, `SignalAwaiter.cs`, `GodotSynchronizationContext.cs`, `GodotTaskScheduler.cs` and `DelegateUtils.cs` (godotengine/godot `modules/mono/glue/GodotSharp/GodotSharp/Core/`). In C#, `await` continuations are posted to a synchronization context that Godot drains every frame on the main thread, delegates become Callables whose target is the delegate's `Target`, and `Task.Run` work runs on .NET pool threads that the CLR attaches automatically.
+
+## Decision
+
+- **Callables from Julia callables.** `Callable(f)` creates a custom Callable for any Julia callable (closures and callable structs included). Its object is `callable_target(f)`, the analog of `Delegate.Target`: `f` itself if `f` is an engine object, otherwise the first live `GodotObject` captured by the closure. Godot removes connections whose Callable object was freed, so this gives C#'s auto-disconnect. **Rule for capture-less functions:** they have no target, and their connections last until they are disconnected or the emitting object is freed. `connect(obj, :sig, f; flags)` returns the Callable. Because equal functions produce equal Callables (by `isequal` on `f`), `disconnect(obj, :sig, f)` and `is_connected` also work with the same function.
+- **C#-event-style helpers.** The bindings generator emits `connect_<signal>(obj, f; flags)` / `disconnect_<signal>(obj, f)` for every engine signal, and `@signal` generates them for script signals (ADR 0009).
+- **Scheduler = Julia's scheduler, with sticky main-thread tasks.** `godot_task(f)` / `@async_godot` create a Julia `Task` pinned to thread 1, the thread Godot's main loop runs on (`jl_set_task_tid`). On the main thread it starts immediately and runs until its first `wait`. Continuations resume only when the main thread yields to Julia's scheduler, which happens in `JuliaLanguage::_frame`: `pump_frame!()` runs the jobs queued with `post(f)` from any thread, then yields while the main thread's work queue is non-empty (bounded rounds). So continuations always run on the main thread at a well-defined point of the frame, like `GodotSynchronizationContext.ExecutePendingContinuations`. Releases queued by finalizers are flushed after that.
+- **Awaiting signals.** `to_signal(obj, :sig)` returns a `SignalAwaiter` connected with `CONNECT_ONE_SHOT`. `wait(awaiter)` / `@await` return the signal arguments as a tuple (C# returns `Variant[]`). When Godot frees the Callable without firing it (the emitter or target was freed), the awaiter is cancelled and the waiting task ends with `SignalCancelled`, which `godot_task` handles silently. C# leaves such awaits pending forever; we end them so nothing leaks (tested by task and pin counts). Waiting on the main thread outside a Godot task is an error, because it would block the engine. Helpers: `next_frame(node)`, `next_physics_frame(node)`, `delay(node, seconds)`; tween `finished` works with `to_signal`.
+- **Unhandled task exceptions** are reported with `push_error` and the Julia stack trace, like C#'s unobserved task exceptions. Other tasks continue.
+- **Worker threads.** `WorkerThreadPool.add_task`/`add_group_task` accept Julia callables. Engine threads are adopted by Julia on first entry. Engine methods that block (`wait_for_task_completion`, `Semaphore.wait`, `Mutex.lock`, `Thread.wait_to_finish`, `OS.delay_*`, `OS.execute`, `ResourceLoader.load_threaded_get`) are generated with GC-safe `ptrcall`s, so a blocked main thread never stalls a collection that a worker needs. `Threads.@spawn` work hands results back with `post`.
+- **Guarded callback trampolines (ABI v4).** Every function pointer Godot may call from any thread (custom Callable, instance binding and script instance callbacks) is registered through `HostAPI.guard_callback`. This returns a native trampoline that adopts the thread if needed, enters the GC-unsafe state for the call and parks the thread GC-safe on return. Julia's own `@cfunction` wrappers would leave a newly adopted engine thread GC-unsafe forever, which stalls every later collection.
+- **No `jl_atexit_hook`.** The host runs `Base._atexit` (user `atexit` hooks) during shutdown and lets the runtime end with the process, as Godot's C# module does with the CLR. `jl_atexit_hook` suspends every other Julia thread, including adopted engine threads, and those threads then block forever in Julia's thread-detach hook when Godot joins them at exit.
+
+## Consequences
+
+- A Godot task is cooperative: a long computation in a task blocks the frame, as long synchronous code after `await` does in C#. Use `Threads.@spawn` or `WorkerThreadPool` for CPU work and `post` the result back.
+- Continuations run during `_frame`, once per process frame, so `await` latency is at least one frame, as in C#.
+- Per-callback trampoline overhead is a TLS lookup plus a GC state transition, negligible next to the Variant marshalling of these entry points.

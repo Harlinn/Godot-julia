@@ -1,0 +1,46 @@
+# Godot
+.godot/
+*.import
+export_presets.cfg
+
+# Build outputs
+addons/godot_julia/bin/*
+!addons/godot_julia/bin/.gitkeep
+*.obj
+*.o
+*.os
+*.lib
+*.exp
+*.pdb
+*.ilk
+.sconsign*.dblite
+/build/
+native/api/
+native/src/gen/
+
+# Generated Julia bindings
+julia/Godot/src/generated/
+julia/GodotEditor/src/generated/
+
+# Julia
+Manifest.toml
+Manifest-v*.toml
+*.jl.cov
+*.jl.mem
+
+# Addon copies synced into test/demo projects
+tests/integration/*/addons/godot_julia/
+tests/benchmarks/project/addons/
+demos/*/addons/godot_julia/
+demos/*/addons/gdjl_demo_driver/
+demos/*/override.cfg
+
+# Source archives from scripts/package_repo.ps1
+/godotJL-*.7z
+
+# Editors / OS
+.tools/
+.vs/
+.idea/
+.DS_Store
+Thumbs.db

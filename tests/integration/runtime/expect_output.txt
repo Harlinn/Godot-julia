@@ -1,0 +1,5 @@
+GodotJL: Julia 1.
+hello from julia
+partial line
+stderr from julia
+info from julia

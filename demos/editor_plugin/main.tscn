@@ -1,0 +1,10 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://addons/julia_spinner/Spinner.jl" id="1"]
+
+[node name="Main" type="Node2D"]
+
+[node name="Spinner" type="Node2D" parent="."]
+position = Vector2(320, 240)
+script = ExtResource("1")
+speed = 2.0

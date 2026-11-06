@@ -1,0 +1,13 @@
+name = "GodotEditor"
+uuid = "5b0e7c3a-1d64-4c8e-9f2b-6a7d3e9c41f0"
+version = "0.1.0"
+authors = ["GodotJL contributors"]
+
+[deps]
+Godot = "f37c0048-e111-4823-9dfb-7d6ad2e3f4cb"
+
+[sources]
+Godot = {path = "../Godot"}
+
+[compat]
+julia = "1.12"

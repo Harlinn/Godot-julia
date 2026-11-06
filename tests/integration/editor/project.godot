@@ -1,0 +1,16 @@
+; Engine configuration file.
+
+config_version=5
+
+[application]
+
+config/name="GodotJL Editor Test"
+config/features=PackedStringArray("4.7")
+
+[editor_plugins]
+
+enabled=PackedStringArray("res://addons/editor_test/plugin.cfg")
+
+[julia]
+
+project/package_name="Editor Test Game"

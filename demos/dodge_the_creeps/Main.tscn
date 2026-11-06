@@ -1,0 +1,57 @@
+[gd_scene format=3 uid="uid://jdug5q02vuny"]
+
+[ext_resource type="Script" path="res://Main.jl" id="1_t4q5g"]
+[ext_resource type="PackedScene" uid="uid://km3p7l56sgtx" path="res://Mob.tscn" id="2_06wge"]
+[ext_resource type="PackedScene" uid="uid://chv7x63ne2hrq" path="res://Player.tscn" id="3_ouh2a"]
+[ext_resource type="PackedScene" uid="uid://cqppxmb7k5e0u" path="res://HUD.tscn" id="4_f8bkj"]
+[ext_resource type="AudioStream" uid="uid://dylgctjwaj8oc" path="res://art/House In a Forest Loop.ogg" id="5_dnvwy"]
+[ext_resource type="AudioStream" uid="uid://bfcm743iwwnn0" path="res://art/gameover.wav" id="5_r2snl"]
+
+[sub_resource type="Curve2D" id="1"]
+_data = {
+"points": PackedVector2Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 480, 0, 0, 0, 0, 0, 480, 720, 0, 0, 0, 0, 0, 720, 0, 0, 0, 0, 0, 0)
+}
+point_count = 5
+
+[node name="Main" type="Node" unique_id=1055941305]
+script = ExtResource("1_t4q5g")
+mob_scene = ExtResource("2_06wge")
+
+[node name="ColorRect" type="ColorRect" parent="." unique_id=1131724171]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+color = Color(0.219608, 0.372549, 0.380392, 1)
+
+[node name="Player" parent="." unique_id=760614831 instance=ExtResource("3_ouh2a")]
+
+[node name="MobTimer" type="Timer" parent="." unique_id=302842278]
+wait_time = 0.5
+
+[node name="ScoreTimer" type="Timer" parent="." unique_id=1305619655]
+
+[node name="StartTimer" type="Timer" parent="." unique_id=1357857579]
+wait_time = 2.0
+one_shot = true
+
+[node name="StartPosition" type="Marker2D" parent="." unique_id=321125418]
+position = Vector2(240, 450)
+
+[node name="MobPath" type="Path2D" parent="." unique_id=1491263292]
+curve = SubResource("1")
+
+[node name="MobSpawnLocation" type="PathFollow2D" parent="MobPath" unique_id=520991469]
+
+[node name="HUD" parent="." unique_id=1185541610 instance=ExtResource("4_f8bkj")]
+
+[node name="Music" type="AudioStreamPlayer" parent="." unique_id=1541769188]
+stream = ExtResource("5_dnvwy")
+
+[node name="DeathSound" type="AudioStreamPlayer" parent="." unique_id=693847821]
+stream = ExtResource("5_r2snl")
+
+[connection signal="hit" from="Player" to="." method="game_over"]
+[connection signal="timeout" from="MobTimer" to="." method="on_mob_timer_timeout"]
+[connection signal="timeout" from="ScoreTimer" to="." method="on_score_timer_timeout"]
+[connection signal="timeout" from="StartTimer" to="." method="on_start_timer_timeout"]
+[connection signal="start_game" from="HUD" to="." method="new_game"]

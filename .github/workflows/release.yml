@@ -1,0 +1,95 @@
+name: Release
+
+# Push a tag vX.Y.Z (matching julia/Godot/Project.toml) to build the addon for every platform, attach the zip to a
+# GitHub release and ask JuliaRegistrator to register the Godot package version.
+on:
+  push:
+    tags: ["v*"]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  native:
+    name: Native ${{ matrix.platform }} ${{ matrix.arch }} ${{ matrix.precision }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - { os: windows-latest, platform: windows, arch: x86_64, precision: single }
+          - { os: windows-latest, platform: windows, arch: x86_64, precision: double }
+          - { os: windows-latest, platform: windows, arch: arm64, precision: single }
+          - { os: ubuntu-latest, platform: linux, arch: x86_64, precision: single }
+          - { os: ubuntu-latest, platform: linux, arch: x86_64, precision: double }
+          - { os: ubuntu-24.04-arm, platform: linux, arch: arm64, precision: single }
+          - { os: macos-latest, platform: macos, arch: universal, precision: single }
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: python -m pip install scons
+      - name: Build editor, debug and release libraries
+        shell: bash
+        run: |
+          for target in editor template_debug template_release; do
+            scons -C native platform=${{ matrix.platform }} arch=${{ matrix.arch }} precision=${{ matrix.precision }} \
+                  target=$target dev_fallbacks=no -j4
+          done
+      - uses: actions/upload-artifact@v4
+        with:
+          name: bin-${{ matrix.platform }}-${{ matrix.arch }}-${{ matrix.precision }}
+          path: |
+            addons/godot_julia/bin/*.dll
+            addons/godot_julia/bin/*.so
+            addons/godot_julia/bin/*.framework
+
+  package:
+    name: Package addon and release
+    needs: native
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+      - uses: julia-actions/setup-julia@v2
+        with:
+          version: "1"
+      - uses: actions/download-artifact@v4
+        with:
+          path: addons/godot_julia/bin
+          pattern: bin-*
+          merge-multiple: true
+      - name: Check version matches the tag
+        if: startsWith(github.ref, 'refs/tags/v')
+        run: |
+          version=$(julia --startup-file=no -e 'import TOML; print(TOML.parsefile("julia/Godot/Project.toml")["version"])')
+          test "v$version" = "${GITHUB_REF_NAME}" || { echo "tag ${GITHUB_REF_NAME} != Godot package v$version"; exit 1; }
+      - run: julia --startup-file=no scripts/fetch_godot.jl
+      - run: julia --startup-file=no scripts/generate_bindings.jl
+      - run: julia --startup-file=no scripts/package_addon.jl dist
+      - uses: actions/upload-artifact@v4
+        with:
+          name: addon
+          path: dist/*.zip
+      - name: GitHub release
+        if: startsWith(github.ref, 'refs/tags/v')
+        uses: softprops/action-gh-release@v2
+        with:
+          files: dist/*.zip
+          generate_release_notes: true
+
+  register:
+    name: Register the Godot Julia package
+    needs: package
+    if: startsWith(github.ref, 'refs/tags/v')
+    runs-on: ubuntu-latest
+    steps:
+      # JuliaRegistrator (GitHub app, installed on the repository) opens the General registry pull request.
+      - uses: peter-evans/commit-comment@v3
+        with:
+          body: "@JuliaRegistrator register subdir=julia/Godot"

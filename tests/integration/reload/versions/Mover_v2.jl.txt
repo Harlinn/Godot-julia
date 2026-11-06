@@ -1,0 +1,29 @@
+using Godot
+
+@enum Mode Idle Run
+
+struct Stats
+    hits::Int
+end
+
+@godot_class mutable struct Mover <: Node
+    @export speed::Float64 = 1.0
+    count::Int = 0
+    label::String = "v2"
+    mode::Mode = Idle
+    stats::Stats = Stats(0)
+    extra::Int = 42
+    @signal moved(n::Int)
+end
+
+version(self::Mover) = 2
+
+function step(self::Mover)
+    self.count += 1
+    return self.count
+end
+
+stats_hits(self::Mover) = self.stats.hits
+mode_name(self::Mover) = string(self.mode)
+
+arm(self::Mover) = (connect(self, :moved, n -> (self.label = "v2:$n"; nothing)); nothing)

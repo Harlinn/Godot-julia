@@ -1,0 +1,9 @@
+# ns per operation; machine: x86_64-w64-mingw32, Intel(R) Xeon(R) Platinum 8272CL CPU @ 2.60GHz
+engine_call = 37.3
+engine_to_gdscript_call = 551.3
+engine_to_julia_script_call = 1101.0
+gdscript_process_dispatch = 280.0
+julia_process_dispatch = 659.8
+property_get = 36.4
+signal_emit_to_julia = 733.6
+variant_round_trip = 38.2

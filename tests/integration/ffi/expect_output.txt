@@ -1,0 +1,1 @@
+ns/call over 1M calls, 0 bytes allocated

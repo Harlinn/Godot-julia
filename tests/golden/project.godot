@@ -1,0 +1,5 @@
+; Minimal project (no GDExtensions) used to evaluate math golden cases in GDScript.
+config_version=5
+
+[application]
+config/name="GodotJL golden values"

@@ -1,0 +1,102 @@
+[gd_scene format=3 uid="uid://b33eutrho0ohc"]
+
+[ext_resource type="Script" path="res://Logic/Paddle.jl" id="1"]
+[ext_resource type="Texture2D" uid="uid://c1fewcisyhunx" path="res://paddle.png" id="2"]
+[ext_resource type="Script" path="res://Logic/Ball.jl" id="4"]
+[ext_resource type="Texture2D" uid="uid://cnb11xq6xo816" path="res://ball.png" id="5"]
+[ext_resource type="Texture2D" uid="uid://34s1o6phb23j" path="res://separator.png" id="6"]
+[ext_resource type="Script" path="res://Logic/Wall.jl" id="7"]
+[ext_resource type="Script" path="res://Logic/CeilingFloor.jl" id="8"]
+
+[sub_resource type="RectangleShape2D" id="1"]
+size = Vector2(4, 32)
+
+[sub_resource type="RectangleShape2D" id="2"]
+size = Vector2(8, 8)
+
+[sub_resource type="RectangleShape2D" id="3"]
+size = Vector2(10, 400)
+
+[sub_resource type="RectangleShape2D" id="4"]
+size = Vector2(640, 10)
+
+[node name="Pong" type="Node2D" unique_id=914795583]
+
+[node name="Background" type="ColorRect" parent="." unique_id=25505825]
+offset_right = 640.0
+offset_bottom = 400.0
+color = Color(0.141176, 0.152941, 0.164706, 1)
+
+[node name="Left" type="Area2D" parent="." unique_id=657288178]
+modulate = Color(0, 1, 1, 1)
+position = Vector2(67.6285, 192.594)
+script = ExtResource("1")
+
+[node name="Sprite2D" type="Sprite2D" parent="Left" unique_id=463591889]
+texture = ExtResource("2")
+
+[node name="Collision" type="CollisionShape2D" parent="Left" unique_id=79657214]
+shape = SubResource("1")
+
+[node name="Right" type="Area2D" parent="." unique_id=1536606446]
+modulate = Color(1, 0, 1, 1)
+position = Vector2(563.815, 188.919)
+script = ExtResource("1")
+
+[node name="Sprite2D" type="Sprite2D" parent="Right" unique_id=2103741984]
+texture = ExtResource("2")
+
+[node name="Collision" type="CollisionShape2D" parent="Right" unique_id=404288284]
+shape = SubResource("1")
+
+[node name="Ball" type="Area2D" parent="." unique_id=131685224]
+position = Vector2(320.5, 191.124)
+script = ExtResource("4")
+
+[node name="Sprite2D" type="Sprite2D" parent="Ball" unique_id=2134380632]
+texture = ExtResource("5")
+
+[node name="Collision" type="CollisionShape2D" parent="Ball" unique_id=2133199043]
+shape = SubResource("2")
+
+[node name="Separator" type="Sprite2D" parent="." unique_id=1029310867]
+position = Vector2(320, 200)
+texture = ExtResource("6")
+
+[node name="Node2D" type="Node2D" parent="." unique_id=2088683454]
+
+[node name="LeftWall" type="Area2D" parent="." unique_id=1788607714]
+position = Vector2(-10, 200)
+script = ExtResource("7")
+
+[node name="Collision" type="CollisionShape2D" parent="LeftWall" unique_id=590580473]
+shape = SubResource("3")
+
+[node name="RightWall" type="Area2D" parent="." unique_id=680078463]
+position = Vector2(650, 200)
+script = ExtResource("7")
+
+[node name="Collision" type="CollisionShape2D" parent="RightWall" unique_id=2104962020]
+shape = SubResource("3")
+
+[node name="Ceiling" type="Area2D" parent="." unique_id=1352691530]
+position = Vector2(320, -10)
+script = ExtResource("8")
+
+[node name="Collision" type="CollisionShape2D" parent="Ceiling" unique_id=1890144786]
+shape = SubResource("4")
+
+[node name="Floor" type="Area2D" parent="." unique_id=1281342904]
+position = Vector2(320, 410)
+script = ExtResource("8")
+bounce_direction = -1
+
+[node name="Collision" type="CollisionShape2D" parent="Floor" unique_id=978687285]
+shape = SubResource("4")
+
+[connection signal="area_entered" from="Left" to="Left" method="on_area_entered"]
+[connection signal="area_entered" from="Right" to="Right" method="on_area_entered"]
+[connection signal="area_entered" from="LeftWall" to="LeftWall" method="on_wall_area_entered"]
+[connection signal="area_entered" from="RightWall" to="RightWall" method="on_wall_area_entered"]
+[connection signal="area_entered" from="Ceiling" to="Ceiling" method="on_area_entered"]
+[connection signal="area_entered" from="Floor" to="Floor" method="on_area_entered"]

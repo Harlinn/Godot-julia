@@ -1,0 +1,10 @@
+using Godot
+
+@godot_class mutable struct Mover <: Node
+    @export speed::Float64 = 1.0
+    count::String = ""
+    extra::Int = 0
+    @signal moved(n::Int)
+end
+
+version(self::Mover) = 3

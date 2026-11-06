@@ -1,0 +1,54 @@
+#!/usr/bin/env python
+# GodotJL native host build. Usage (from repo root):
+#   scons -C native target=editor|template_debug|template_release [platform=...] [precision=single|double] [julia_dir=...]
+import os
+import subprocess
+
+GODOT_API_VERSION = "4.7"
+ADDON_BIN = "#../addons/godot_julia/bin"
+
+env = SConscript("godot-cpp/SConstruct", {"api_version": GODOT_API_VERSION})
+# Our flags must not leak into godot-cpp's environment, or the whole library rebuilds.
+env = env.Clone()
+
+
+def find_julia_dir():
+    candidate = ARGUMENTS.get("julia_dir") or os.environ.get("JULIA_DIR")
+    if not candidate:
+        try:
+            bindir = subprocess.check_output(
+                ["julia", "--startup-file=no", "-e", "print(Sys.BINDIR)"], text=True, timeout=120
+            ).strip()
+            candidate = os.path.dirname(bindir)
+        except (OSError, subprocess.SubprocessError):
+            return None
+    return candidate if os.path.isdir(os.path.join(candidate, "bin")) else None
+
+
+# libjulia is loaded at runtime (docs/adr/0002-runtime-loading.md); development builds remember the local Julia
+# and package sources as last-resort fallbacks (dev_fallbacks=no for distributed builds).
+if env["target"] != "template_release" and ARGUMENTS.get("dev_fallbacks", "yes") == "yes":
+    julia_dir = find_julia_dir()
+    if julia_dir:
+        print("GodotJL: development fallback Julia: " + julia_dir)
+        env.Append(CPPDEFINES=[("GDJL_DEV_JULIA_DIR", '\\"' + julia_dir.replace("\\", "/") + '\\"')])
+    packages_dir = Dir("#../julia").abspath.replace("\\", "/")
+    env.Append(CPPDEFINES=[("GDJL_DEV_PACKAGES_DIR", '\\"' + packages_dir + '\\"')])
+
+env.Append(CPPPATH=["src/"])
+sources = Glob("src/*.cpp")
+
+# Optional AddressSanitizer build (CI sanitizer job; the host process needs libasan preloaded).
+if ARGUMENTS.get("asan", "no") == "yes" and not env.get("is_msvc", False):
+    env.Append(CCFLAGS=["-fsanitize=address", "-fno-omit-frame-pointer"], LINKFLAGS=["-fsanitize=address"])
+
+if env["platform"] == "macos":
+    name = "libgodot_julia.{}.{}".format(env["platform"], env["target"])
+    library = env.SharedLibrary("{}/{}.framework/{}".format(ADDON_BIN, name, name), source=sources)
+else:
+    library = env.SharedLibrary(
+        "{}/libgodot_julia{}{}".format(ADDON_BIN, env["suffix"], env["SHLIBSUFFIX"]), source=sources
+    )
+
+env.NoCache(library)
+Default(library)
