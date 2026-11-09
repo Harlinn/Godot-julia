@@ -1,3 +1,6 @@
+# Copyright 2026 Espen Harlinn
+# SPDX-License-Identifier: Apache-2.0
+
 name: CI
 
 on:
@@ -10,13 +13,16 @@ concurrency:
   group: ci-${{ github.ref }}
   cancel-in-progress: true
 
+permissions:
+  contents: read
+
 jobs:
   parity:
     name: Parity-test check
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: julia-actions/setup-julia@v2
+      - uses: actions/checkout@v7
+      - uses: julia-actions/setup-julia@v3
         with:
           version: "1"
       - run: julia --startup-file=no scripts/check_parity_tests.jl
@@ -41,44 +47,53 @@ jobs:
       SCONS_CACHE: ${{ github.workspace }}/.scons-cache
       # Exports compile system images; the generic CPU target halves the build time on CI.
       GDJL_EXPORT_CPU_TARGET: generic
+      # Export tests need the official templates (~1 GiB); run them once per OS, with the latest Julia.
+      GDJL_RUN_EXPORTS: ${{ matrix.precision == 'single' && matrix.julia == '1' }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           submodules: recursive
 
-      - uses: julia-actions/setup-julia@v2
+      - uses: julia-actions/setup-julia@v3
         with:
           version: ${{ matrix.julia }}
-      - uses: julia-actions/cache@v2
+      - uses: julia-actions/cache@v3
 
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@v7
         with:
           python-version: "3.12"
       - run: python -m pip install scons
 
+      # The build embeds the Julia install path (dev fallback), so each Julia version gets its own cache.
       - name: SCons cache
-        uses: actions/cache@v4
+        uses: actions/cache@v6
         with:
           path: .scons-cache
-          key: scons-${{ matrix.os }}-${{ matrix.precision }}-${{ hashFiles('native/src/**', 'native/SConstruct') }}
-          restore-keys: scons-${{ matrix.os }}-${{ matrix.precision }}-
+          key: scons-${{ matrix.os }}-${{ matrix.precision }}-julia${{ matrix.julia }}-${{ hashFiles('native/src/**', 'native/SConstruct', 'native/godot-cpp/gdextension/**', 'native/godot-cpp/tools/**') }}
+          restore-keys: scons-${{ matrix.os }}-${{ matrix.precision }}-julia${{ matrix.julia }}-
 
-      - name: Fetch pinned Godot (+ export templates)
+      - name: Fetch pinned Godot
         if: matrix.precision == 'single'
-        run: julia --startup-file=no scripts/fetch_godot.jl --templates
+        shell: bash
+        run: |
+          if [ "$GDJL_RUN_EXPORTS" = "true" ]; then templates=--templates; fi
+          julia --startup-file=no scripts/fetch_godot.jl $templates
 
-      - name: Cache double-precision Godot editor
+      # Restore/save explicitly: a plain actions/cache only saves when the whole job succeeds, and this build is long.
+      - name: Restore double-precision Godot editor
         if: matrix.precision == 'double'
         id: godot-double
-        uses: actions/cache@v4
+        uses: actions/cache/restore@v6
         with:
           path: .tools/godot
-          key: godot-double-${{ runner.os }}-${{ hashFiles('GODOT_VERSION') }}
+          key: godot-double-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('GODOT_VERSION') }}
 
       - name: Build double-precision Godot editor
         if: matrix.precision == 'double' && steps.godot-double.outputs.cache-hit != 'true'
         shell: bash
         run: |
+          # Godot's SConstruct also honours SCONS_CACHE; keep its gigabytes of objects out of the native cache.
+          unset SCONS_CACHE
           tag=$(cat GODOT_VERSION)
           git clone --depth 1 --branch "$tag" https://github.com/godotengine/godot.git .tools/godot-src
           cd .tools/godot-src
@@ -86,17 +101,26 @@ jobs:
                 speechd=no dbus=no fontconfig=no udev=no -j"$(nproc)"
           mkdir -p ../godot
           cp bin/godot.linuxbsd.editor.double.x86_64 "../godot/Godot_v${tag}_linux.x86_64"
+          cd ../..
+          rm -rf .tools/godot-src
+
+      - name: Save double-precision Godot editor
+        if: matrix.precision == 'double' && steps.godot-double.outputs.cache-hit != 'true'
+        uses: actions/cache/save@v6
+        with:
+          path: .tools/godot
+          key: ${{ steps.godot-double.outputs.cache-primary-key }}
 
       - name: Test (build, bindings, unit, parity, integration with leak checks, exports)
         shell: bash
         run: |
           args="--precision=${{ matrix.precision }}"
-          if [ "${{ matrix.precision }}" = "single" ] && [ "${{ matrix.julia }}" = "1" ]; then args="$args --exports"; fi
+          if [ "$GDJL_RUN_EXPORTS" = "true" ]; then args="$args --exports"; fi
           julia --startup-file=no scripts/test_all.jl $args
 
       - name: Upload logs on failure
         if: failure()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: logs-${{ matrix.os }}-${{ matrix.precision }}-julia${{ matrix.julia }}
           path: |
@@ -114,23 +138,27 @@ jobs:
       # Baselines come from the reference machine in docs/perf.md; CI runners are slower and noisy.
       GDJL_BENCH_TOLERANCE: "10"
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           submodules: recursive
-      - uses: julia-actions/setup-julia@v2
+      - uses: julia-actions/setup-julia@v3
         with:
           version: "1"
-      - uses: julia-actions/cache@v2
-      - uses: actions/setup-python@v5
+      - uses: julia-actions/cache@v3
+      - uses: actions/setup-python@v7
         with:
           python-version: "3.12"
       - run: python -m pip install scons
-      - uses: actions/cache@v4
+      - uses: actions/cache/restore@v6
         with:
           path: .scons-cache
-          key: scons-ubuntu-latest-single-${{ hashFiles('native/src/**', 'native/SConstruct') }}
-          restore-keys: scons-ubuntu-latest-single-
-      - run: julia --startup-file=no scripts/fetch_godot.jl
+          key: scons-ubuntu-latest-single-julia1-${{ hashFiles('native/src/**', 'native/SConstruct', 'native/godot-cpp/gdextension/**', 'native/godot-cpp/tools/**') }}
+          restore-keys: scons-ubuntu-latest-single-julia1-
+      # GODOT lets fetch_api.jl dump the API with class docs instead of falling back to godot-cpp's copy.
+      - name: Fetch pinned Godot
+        run: |
+          julia --startup-file=no scripts/fetch_godot.jl
+          echo "GODOT=$(julia --startup-file=no -e 'include("tests/integration/godot_path.jl"); print(find_godot(pwd()))')" >> "$GITHUB_ENV"
       - run: scons -C native target=editor -j"$(nproc)"
       - run: julia --startup-file=no scripts/generate_bindings.jl
       - run: julia --startup-file=no --project=julia/Godot -e "using Pkg; Pkg.instantiate(); using Godot"
@@ -142,26 +170,33 @@ jobs:
     runs-on: ubuntu-latest
     continue-on-error: true
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           submodules: recursive
-      - uses: julia-actions/setup-julia@v2
+      - uses: julia-actions/setup-julia@v3
         with:
           version: "1"
-      - uses: julia-actions/cache@v2
-      - uses: actions/setup-python@v5
+      - uses: julia-actions/cache@v3
+      - uses: actions/setup-python@v7
         with:
           python-version: "3.12"
       - run: python -m pip install scons
-      - run: julia --startup-file=no scripts/fetch_godot.jl
+      - name: Fetch pinned Godot
+        run: |
+          julia --startup-file=no scripts/fetch_godot.jl
+          echo "GODOT=$(julia --startup-file=no -e 'include("tests/integration/godot_path.jl"); print(find_godot(pwd()))')" >> "$GITHUB_ENV"
       - run: scons -C native target=editor asan=yes -j"$(nproc)"
       - run: julia --startup-file=no scripts/generate_bindings.jl
       - run: julia --startup-file=no --project=julia/Godot -e "using Pkg; Pkg.instantiate(); using Godot"
+      # ASan's shadow memory layout breaks with the 32 random mmap bits of Ubuntu 24.04 runner kernels.
+      - run: sudo sysctl -w vm.mmap_rnd_bits=28
       - name: Integration tests under ASan
         shell: bash
         env:
           # Julia's own allocations are not tracked by LSan; report memory errors only.
           ASAN_OPTIONS: detect_leaks=0:allow_user_segv_handler=1:handle_segv=0
         run: |
-          export LD_PRELOAD="$(gcc -print-file-name=libasan.so)"
-          julia --startup-file=no tests/integration/run.jl
+          # Preload libasan into Godot only, not into the Julia test runner.
+          printf '#!/bin/sh\nLD_PRELOAD="%s" exec "%s" "$@"\n' "$(gcc -print-file-name=libasan.so)" "$GODOT" > .tools/godot-asan
+          chmod +x .tools/godot-asan
+          GODOT="$PWD/.tools/godot-asan" julia --startup-file=no tests/integration/run.jl

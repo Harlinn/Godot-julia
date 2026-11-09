@@ -1,3 +1,6 @@
+// Copyright 2026 Espen Harlinn
+// SPDX-License-Identifier: Apache-2.0
+
 #include "julia_host.h"
 
 #include "dynlib.h"
@@ -151,14 +154,19 @@ static Variant define_setting(const String &p_name, const Variant &p_default, Va
 static String get_library_dir() {
 	String path;
 	gdextension_interface::get_library_path(gdextension_interface::library, path._native_ptr());
-	return normalize_dir(ProjectSettings::get_singleton()->globalize_path(path)).get_base_dir();
+	String dir = normalize_dir(ProjectSettings::get_singleton()->globalize_path(path)).get_base_dir();
+	// macOS: the binary lives inside bin/<name>.framework/; report bin/ like on the other platforms.
+	if (dir.ends_with(".framework")) {
+		dir = dir.get_base_dir();
+	}
+	return dir;
 }
 
 template <typename T>
 static bool resolve(void *p_handle, const char *p_name, T &r_fn) {
 	r_fn = reinterpret_cast<T>(dynlib_symbol(p_handle, p_name));
 	if (!r_fn) {
-		ERR_PRINT(String("GodotJL: missing Julia symbol ") + p_name);
+		ERR_PRINT(String("Godot-julia: missing Julia symbol ") + p_name);
 		return false;
 	}
 	return true;
@@ -185,7 +193,7 @@ void JuliaHost::define_settings() {
 }
 
 // Exported games keep the Julia payload in a data_*/ folder next to this library (like C#'s data_* folder); on macOS
-// the library is inside its .framework, so the folder is one level up.
+// next to its .framework.
 String JuliaHost::find_export_dir() const {
 	String lib_dir = get_library_dir();
 	for (const String &base : { lib_dir, lib_dir.get_base_dir() }) {
@@ -286,7 +294,7 @@ bool JuliaHost::load_library(const String &p_home) {
 	String path = p_home.path_join(LIBJULIA_REL);
 	libjulia = dynlib_open(path.utf8().get_data(), error);
 	if (!libjulia) {
-		ERR_PRINT("GodotJL: could not load " + path + ": " + String::utf8(error.c_str()));
+		ERR_PRINT("Godot-julia: could not load " + path + ": " + String::utf8(error.c_str()));
 		return false;
 	}
 
@@ -311,7 +319,7 @@ bool JuliaHost::load_library(const String &p_home) {
 																  : std::string(p_home.path_join(LIBJULIA_INTERNAL_REL).utf8().get_data());
 	void *internal = dynlib_open(internal_path.c_str(), error);
 	if (!internal) {
-		ERR_PRINT("GodotJL: could not open libjulia-internal: " + String::utf8(error.c_str()));
+		ERR_PRINT("Godot-julia: could not open libjulia-internal: " + String::utf8(error.c_str()));
 		return false;
 	}
 	return resolve(internal, "jl_gc_safe_enter", api.jl_gc_safe_enter) &&
@@ -360,7 +368,7 @@ bool JuliaHost::start_julia(const String &p_home) {
 		sysimage = p_home.path_join(SYSIMAGE_REL);
 	}
 	if (!FileAccess::file_exists(sysimage)) {
-		ERR_PRINT("GodotJL: Julia system image not found: " + sysimage);
+		ERR_PRINT("Godot-julia: Julia system image not found: " + sysimage);
 		return false;
 	}
 	bindir_utf8 = p_home.path_join("bin").utf8().get_data();
@@ -460,10 +468,10 @@ bool JuliaHost::initialize() {
 	String home = locate_runtime(source);
 	if (home.is_empty()) {
 		if (!export_dir_utf8.empty()) {
-			ERR_PRINT("GodotJL: the exported Julia runtime is missing from " + export_dir() + "/julia. Julia scripting is disabled.");
+			ERR_PRINT("Godot-julia: the exported Julia runtime is missing from " + export_dir() + "/julia. Julia scripting is disabled.");
 			return false;
 		}
-		ERR_PRINT("GodotJL: Julia runtime not found. Install Julia >= 1." + String::num_int64(MIN_JULIA_MINOR) +
+		ERR_PRINT("Godot-julia: Julia runtime not found. Install Julia >= 1." + String::num_int64(MIN_JULIA_MINOR) +
 				" and put it on PATH, or set the project setting julia/runtime/path. Julia scripting is disabled.");
 		return false;
 	}
@@ -475,7 +483,7 @@ bool JuliaHost::initialize() {
 	String version = String::utf8(api.jl_ver_string());
 	version_utf8 = version.utf8().get_data();
 	if (api.jl_ver_major() != 1 || api.jl_ver_minor() < MIN_JULIA_MINOR) {
-		ERR_PRINT("GodotJL: Julia " + version + " is not supported; Julia >= 1." + String::num_int64(MIN_JULIA_MINOR) + " is required.");
+		ERR_PRINT("Godot-julia: Julia " + version + " is not supported; Julia >= 1." + String::num_int64(MIN_JULIA_MINOR) + " is required.");
 		return false;
 	}
 	if (!start_julia(home)) {
@@ -488,11 +496,11 @@ bool JuliaHost::initialize() {
 	// From now on the main thread runs Godot code; let Julia's GC proceed without waiting for it.
 	main_gc_state = api.jl_gc_safe_enter();
 	if (!ready) {
-		ERR_PRINT("GodotJL: failed to start Godot.Runtime: " + error);
+		ERR_PRINT("Godot-julia: failed to start Godot.Runtime: " + error);
 		return false;
 	}
 	int64_t total_ms = ms_since(start);
-	UtilityFunctions::print("GodotJL: Julia " + version + " from " + home + " (" + source + "); startup " + String::num_int64(total_ms) +
+	UtilityFunctions::print("Godot-julia: Julia " + version + " from " + home + " (" + source + "); startup " + String::num_int64(total_ms) +
 			" ms (locate " + String::num_int64(locate_ms) + " ms, jl_init " + String::num_int64(init_ms) + " ms, Godot.Runtime " +
 			String::num_int64(total_ms - locate_ms - init_ms) + " ms)");
 	return true;
@@ -515,7 +523,7 @@ void JuliaHost::shutdown() {
 }
 
 bool JuliaHost::eval_string(const String &p_code, String &r_result) {
-	ERR_FAIL_COND_V_MSG(!ready, false, "GodotJL: the Julia runtime is not available.");
+	ERR_FAIL_COND_V_MSG(!ready, false, "Godot-julia: the Julia runtime is not available.");
 	CharString code = p_code.utf8();
 	JuliaThreadGuard guard(api);
 	return julia_api.eval_string(code.get_data(), code.length(), &r_result) == 0;
@@ -541,11 +549,11 @@ void JuliaHost::load_editor_api() {
 		ok = eval_checked("try; Godot.Runtime.load_editor_api!(); nothing; catch e; sprint(showerror, e, catch_backtrace()); end", error);
 	}
 	if (!ok) {
-		ERR_PRINT("GodotJL: failed to load the editor API (GodotEditor): " + error);
+		ERR_PRINT("Godot-julia: failed to load the editor API (GodotEditor): " + error);
 		return;
 	}
 	int64_t ms = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now() - start).count();
-	UtilityFunctions::print("GodotJL: editor API (Godot.Editor) loaded in " + String::num_int64(ms) + " ms");
+	UtilityFunctions::print("Godot-julia: editor API (Godot.Editor) loaded in " + String::num_int64(ms) + " ms");
 }
 
 } // namespace gdjl

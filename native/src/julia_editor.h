@@ -1,9 +1,13 @@
+// Copyright 2026 Espen Harlinn
+// SPDX-License-Identifier: Apache-2.0
+
 #pragma once
 
 #include <godot_cpp/classes/editor_export_platform.hpp>
 #include <godot_cpp/classes/editor_export_plugin.hpp>
 #include <godot_cpp/classes/editor_plugin.hpp>
 #include <godot_cpp/classes/editor_syntax_highlighter.hpp>
+#include <godot_cpp/classes/editor_translation_parser_plugin.hpp>
 #include <godot_cpp/classes/script.hpp>
 #include <godot_cpp/variant/color.hpp>
 
@@ -54,6 +58,19 @@ public:
 	void _export_end() override;
 };
 
+// Analog of GodotTools' CsTranslationParserPlugin: extracts tr()/tr_n()/atr()/atr_n()/translate() strings from .jl
+// files for POT generation (GodotEditor.Tools parses the source).
+class JuliaTranslationParserPlugin : public godot::EditorTranslationParserPlugin {
+	GDCLASS(JuliaTranslationParserPlugin, godot::EditorTranslationParserPlugin)
+
+protected:
+	static void _bind_methods() {}
+
+public:
+	godot::TypedArray<godot::PackedStringArray> _parse_file(const godot::String &p_path) override;
+	godot::PackedStringArray _get_recognized_extensions() const override;
+};
+
 // Analog of GodotSharpEditor's plugin: a native EditorPlugin added automatically in the editor that forwards its
 // lifecycle to the Julia editor tools (GodotEditor.Tools), which build the Julia panel, menus and Build button.
 class JuliaEditorPlugin : public godot::EditorPlugin {
@@ -61,6 +78,7 @@ class JuliaEditorPlugin : public godot::EditorPlugin {
 
 	godot::Ref<JuliaSyntaxHighlighter> highlighter;
 	godot::Ref<JuliaExportPlugin> export_plugin;
+	godot::Ref<JuliaTranslationParserPlugin> translation_parser;
 
 	void _on_editor_script_changed(const godot::Ref<godot::Script> &p_script);
 

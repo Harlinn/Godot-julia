@@ -1,3 +1,6 @@
+# Copyright 2026 Espen Harlinn
+# SPDX-License-Identifier: Apache-2.0
+
 using Godot
 
 # An editor plugin written in Julia (C#: a [Tool] class deriving from EditorPlugin). It adds a dock with a button

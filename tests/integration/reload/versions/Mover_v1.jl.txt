@@ -12,10 +12,14 @@ end
     label::String = "v1"
     mode::Mode = Idle
     stats::Stats = Stats(0)
+    saved::Int = 0
     @signal moved(n::Int)
 end
 
 version(self::Mover) = 1
+
+# Hot-reload hook (C#: ISerializationListener.OnBeforeSerialize).
+Godot._before_reload(self::Mover) = (self.saved = 100 * self.count; nothing)
 
 function step(self::Mover)
     self.count += 1

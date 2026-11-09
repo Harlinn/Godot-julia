@@ -1,3 +1,6 @@
+# Copyright 2026 Espen Harlinn
+# SPDX-License-Identifier: Apache-2.0
+
 # Projection (4×4, columns x, y, z, w).
 # Ported from Godot's core/math/projection.h/.cpp and GodotSharp/Core/Projection.cs (MIT, Godot contributors).
 

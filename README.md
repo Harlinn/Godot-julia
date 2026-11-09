@@ -1,38 +1,12 @@
 # Godot-julia — Julia scripting for Godot 4
 
-Godot-julia makes Julia a scripting language for Godot 4. The goal 
-is feature parity with Godot's C#/.NET support; progress is tracked 
-in [docs/csharp-parity-matrix.md](docs/csharp-parity-matrix.md).
+Godot-julia makes Julia a scripting language for Godot 4. The goal is feature parity with Godot's C#/.NET support; progress is tracked in [docs/csharp-parity-matrix.md](docs/csharp-parity-matrix.md).
 
-It is a GDExtension, so it works with the official Godot editor 
-and export templates. You do not need a special build. See [ADR 0000](docs/adr/0000-gdextension-vs-module.md).
+It is a GDExtension, so it works with the official Godot editor and export templates. You do not need a special build. See [ADR 0000](docs/adr/0000-gdextension-vs-module.md).
 
 ## Status
 
-Phases 01–16 are complete: The native host embeds Julia; 
-the `Godot` package exposes the full generated engine 
-API, builtin math, Variant and collections, and the 
-object model; `.jl` files are Godot scripts with the 
-C# authoring features (exports with every hint, groups, 
-tool buttons, signals, global classes, RPC, static methods, 
-analyzer-style diagnostics); signals take Julia closures, 
-with async/await on signals and `WorkerThreadPool` support; 
-scripts hot-reload with their state; the editor has a 
-Julia Build button and panel, project bootstrap, package 
-management, external editors, templates and syntax highlighting; 
-Julia errors are script errors at `res://` lines with Julia 
-frames in Godot's debugger, plus `Godot.@breakpoint` and 
-a debug REPL (see [docs/debugging.md](docs/debugging.md)); 
-and desktop exports ship the Julia runtime with the scripts 
-compiled into a system image (see [docs/export.md](docs/export.md)). 
-
-Phase 15's test tooling (one-command runner, in-engine `Test` 
-runner, parity-test check, leak checks, benchmarks) passes 
-locally; its CI and release workflows have not run on GitHub yet. 
-Phase 16 adds the user guide ([docs/user/](docs/user/README.md), 
-one page per C# documentation page, with every example run by the 
-doc tests) and Julia ports of the official C# demos 
-([demos/](demos/README.md)). See the parity matrix for row-by-row status.
+Phases 01–16 are complete: the native host embeds Julia; the `Godot` package exposes the full generated engine API, builtin math, Variant and collections, and the object model; `.jl` files are Godot scripts with the C# authoring features (exports with every hint, groups, tool buttons, signals, global classes, RPC, static methods, analyzer-style diagnostics); signals take Julia closures, with async/await on signals and `WorkerThreadPool` support; scripts hot-reload with their state; the editor has a Julia Build button and panel, project bootstrap, package management, external editors, templates and syntax highlighting; Julia errors are script errors at `res://` lines with Julia frames in Godot's debugger, plus `Godot.@breakpoint` and a debug REPL (see [docs/debugging.md](docs/debugging.md)); and desktop exports ship the Julia runtime with the scripts compiled into a system image (see [docs/export.md](docs/export.md)). Phase 15's test tooling (one-command runner, in-engine `Test` runner, parity-test check, leak checks, benchmarks) passes locally; its CI and release workflows have not run on GitHub yet. Phase 16 adds the user guide ([docs/user/](docs/user/README.md), one page per C# documentation page, with every example run by the doc tests) and Julia ports of the official C# demos ([demos/](demos/README.md)). See the parity matrix for row-by-row status.
 
 ## Prerequisites
 
@@ -46,7 +20,8 @@ doc tests) and Julia ports of the official C# demos
 ## Getting the sources
 
 ```sh
-git clone --recursive <repo-url>
+git clone --recursive https://github.com/Harlinn/Godot-julia.git
+cd Godot-julia
 # or, in an existing clone:
 git submodule update --init --recursive
 ```
@@ -231,6 +206,8 @@ The builtin math tests compare against golden values computed by Godot from `jul
 
 Parity coverage: `julia scripts/check_parity_tests.jl` fails when a `DONE` row of the parity matrix has no test tagging it with a comment such as `# parity: 5.6, 6.1–6.6`.
 
+API surface: `julia --project=julia/Godot scripts/api_diff.jl [--strict] [--verbose]` compares GodotSharp's public API at the pinned Godot tag (sparse-cloned into `.tools/godot-mono`) with the `Godot` package under the documented naming rules, and lists C# members without a Julia counterpart.
+
 Headless integration tests. These need the native library built (`target=editor`) and a Godot binary, found via `GODOT`, the gitignored `.tools/godot/` folder (on Windows, use the `_console.exe` build), or `PATH`:
 
 ```sh
@@ -294,4 +271,6 @@ scripts/                Developer tooling (test_all, fetch_godot, check_parity_t
 
 ## License
 
-To be decided. Code ported from Godot (MIT) keeps its attribution comments.
+Copyright 2026 Espen Harlinn. Licensed under the [Apache License, Version 2.0](LICENSE); see [NOTICE](NOTICE) for included third-party code. Code ported from Godot (MIT) keeps its attribution comments, and the demo ports in `demos/` remain under the MIT License ([demos/LICENSE.md](demos/LICENSE.md)).
+
+Source files carry an SPDX header; `julia scripts/license_headers.jl` adds it to new files (`--check` lists files without one).

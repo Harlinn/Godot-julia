@@ -1,4 +1,7 @@
 #!/usr/bin/env julia
+# Copyright 2026 Espen Harlinn
+# SPDX-License-Identifier: Apache-2.0
+
 # Exports test projects with the headless editor and runs the exported games (phase 14, ADR 0014).
 # Usage: julia tests/export/run.jl [config...]   configs: sysimage-debug sysimage-release jit-debug (default: all)
 # Needs the native template libraries (scons target=template_debug / template_release) and the official export
@@ -135,7 +138,7 @@ function export_and_run(godot, name, src, config)
         m === nothing ? push!(failures, "no GDJL_TEST_RESULT {json} line") :
             (m[2] == "0" && m[1] != "0") || push!(failures, "in-game checks: passed=$(m[1]) failed=$(m[2])")
         s = match(r"startup (\d+) ms", output)
-        s === nothing ? push!(failures, "no GodotJL startup line") : (startup_ms = s[1])
+        s === nothing ? push!(failures, "no Godot-julia startup line") : (startup_ms = s[1])
         foreach(l -> push!(failures, "game: $l"), filter(l -> startswith(l, "FAILED") || startswith(l, "ERROR:"),
                                                           split(output, '\n')))
     end

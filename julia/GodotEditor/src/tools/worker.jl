@@ -1,3 +1,6 @@
+# Copyright 2026 Espen Harlinn
+# SPDX-License-Identifier: Apache-2.0
+
 # Child process for editor builds and package actions (C#: the `dotnet build` process GodotTools runs).
 # Usage: julia worker.jl <packages_dir> <depot or -> <project_dir> <verbosity> <command> [args...]
 # Output protocol (one record per line): `GDJL_STEP\t<text>`, `GDJL_PROBLEM\t<severity>\t<file>\t<line>\t<col>\t<message>`;

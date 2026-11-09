@@ -1,3 +1,6 @@
+# Copyright 2026 Espen Harlinn
+# SPDX-License-Identifier: Apache-2.0
+
 # Rect2 and Rect2i.
 # Ported from Godot's core/math/rect2.h/.cpp, rect2i.h and GodotSharp/Core/Rect2.cs, Rect2I.cs (MIT, Godot contributors).
 

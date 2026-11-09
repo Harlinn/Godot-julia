@@ -8,6 +8,7 @@ The complete guide is [docs/export.md](../export.md). In brief:
   - `sysimage` (default) compiles Godot, your packages and your scripts into a system image (ReadyToRun-like); scripts load without their sources.
   - `jit` ships package sources and compiled caches. It is for debug exports only and exports faster.
 - **Sources**: `.jl` files are replaced by empty files in the PCK unless `julia/export/include_sources` is set.
+- **Debug symbols**: `julia/export/include_debug_symbols` (off by default; C# turns it on) keeps file:line in backtraces of release exports, at about 100 MiB more payload.
 - **Platforms**: Windows, Linux and macOS desktop. Export on the platform you target, because the payload comes from the editor's Julia installation.
 - **Engine calls at load time**: a script whose top-level code calls the engine (for example `const SCENE = Godot.load(...)`) is shipped as source and evaluated at startup. Load resources in `_ready` instead to keep the script compiled.
 

@@ -1,3 +1,6 @@
+# Copyright 2026 Espen Harlinn
+# SPDX-License-Identifier: Apache-2.0
+
 using Godot.Runtime: Runtime, HostAPI, JuliaAPI, ABI_VERSION, PRINT_STDOUT, PRINT_STDERR
 
 const PRINTED = Tuple{Int32, String}[]

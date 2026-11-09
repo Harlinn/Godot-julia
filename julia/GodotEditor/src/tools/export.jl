@@ -1,9 +1,13 @@
+# Copyright 2026 Espen Harlinn
+# SPDX-License-Identifier: Apache-2.0
+
 # Exporting games with Julia scripts (C#: GodotTools/Export/ExportPlugin.cs). The native `JuliaExportPlugin`
 # forwards here; the payload (runtime, system image, environment) is built by the worker in a child process and
 # shipped as the `data_<package>_<platform>_<arch>/` folder next to the executable. Design: ADR 0014.
 
 const S_EXPORT_MODE = "julia/export/mode"
 const S_EXPORT_SOURCES = "julia/export/include_sources"
+const S_EXPORT_DEBUG_SYMBOLS = "julia/export/include_debug_symbols"
 const EXPORT_PLATFORMS = ("windows", "linux", "macos")
 const EXPORT_ARCHES = ("x86_64", "x86_32", "arm64", "arm32", "universal")
 const EXPORT_TIMEOUT = 4 * 3600
@@ -35,10 +39,11 @@ end
 
 toml_string(s) = "\"" * escape_string(String(s)) * "\""
 
-function export_config_text(; mode, debug, platform, arch, features, data_dir, global_classes)
+function export_config_text(; mode, debug, platform, arch, features, data_dir, global_classes, debug_symbols = false)
     io = IOBuffer()
     println(io, "mode = ", toml_string(mode))
     println(io, "debug = ", debug)
+    println(io, "debug_symbols = ", debug_symbols)
     println(io, "platform = ", toml_string(platform))
     println(io, "arch = ", toml_string(arch))
     println(io, "features = [", join(toml_string.(features), ", "), "]")
@@ -73,6 +78,7 @@ function export_begin(p::Ptr{Cvoid}, args)
     debug = args["is_debug"] === true
     mode = string(something(Godot.get_option(plugin, S_EXPORT_MODE), "sysimage"))
     keep = mode == "jit" || Godot.get_option(plugin, S_EXPORT_SOURCES) === true
+    debug_symbols = Godot.get_option(plugin, S_EXPORT_DEBUG_SYMBOLS) === true
     EXPORT[] = ExportState(plugin, mode, keep)
     i = findfirst(in(features), EXPORT_PLATFORMS)
     platform = i === nothing ? nothing : EXPORT_PLATFORMS[i]
@@ -88,7 +94,7 @@ function export_begin(p::Ptr{Cvoid}, args)
     mkpath(data)
     config = joinpath(root, name * ".toml")
     write(config, export_config_text(; mode, debug, platform, arch, features, data_dir = data,
-                                     global_classes = julia_global_classes()))
+                                     global_classes = julia_global_classes(), debug_symbols))
     ok = Ref(false)
     ECHO[] = true
     try

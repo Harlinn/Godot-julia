@@ -1,5 +1,8 @@
+# Copyright 2026 Espen Harlinn
+# SPDX-License-Identifier: Apache-2.0
+
 # Precompile workload. Dependency-free stand-in for PrecompileTools: inside the engine, LOAD_PATH holds only the
-# GodotJL packages and stdlibs. Engine calls cannot execute at precompile time, so they are compiled, not run.
+# Godot-julia packages and stdlibs. Engine calls cannot execute at precompile time, so they are compiled, not run.
 let
     R = Runtime
     precompile(R.__init_runtime__, (Ptr{Cvoid}, Ptr{Cvoid}, Ptr{R.HostAPI}, Ptr{R.JuliaAPI}))

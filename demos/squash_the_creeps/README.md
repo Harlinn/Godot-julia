@@ -25,7 +25,7 @@ This demo covers:
 - Using the built-in animation editor to breathe life to your game.
 - Creating a complete game loop with lose conditions, score, and the ability to restart.
 
-Language: Julia ([GodotJL](../../README.md))
+Language: Julia ([Godot-julia](../../README.md))
 
 Renderer: Forward+
 

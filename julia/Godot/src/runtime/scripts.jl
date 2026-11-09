@@ -1,3 +1,6 @@
+# Copyright 2026 Espen Harlinn
+# SPDX-License-Identifier: Apache-2.0
+
 # Script classes and script resources: `@godot_class` metadata, loading `.jl` files into per-generation modules, and
 # the handlers behind JuliaScript / JuliaLanguage (native/src/julia_script.cpp).
 # Behavior ported from modules/mono/csharp_script.cpp and GodotSharp/Core/Bridge/ScriptManagerBridge.cs

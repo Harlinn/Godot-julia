@@ -1,3 +1,6 @@
+// Copyright 2026 Espen Harlinn
+// SPDX-License-Identifier: Apache-2.0
+
 #include "julia_script.h"
 
 #include "julia_host.h"

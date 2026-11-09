@@ -1,4 +1,7 @@
 #!/usr/bin/env julia
+# Copyright 2026 Espen Harlinn
+# SPDX-License-Identifier: Apache-2.0
+
 # Runs every demo headlessly and fails on Godot errors, script errors or leaks.
 # Usage: julia demos/run.jl [demo...]   (Godot from GODOT, .tools/godot/, or PATH; native editor library built)
 # Games are played by demos/driver.gd, injected as an autoload through override.cfg (removed afterwards); it must
@@ -35,7 +38,7 @@ function output_failures(output, allowed)
               startswith(line, "ERROR:") || startswith(line, "SCRIPT ERROR:") || startswith(line, "WARNING:")
         bad && !any(a -> occursin(a, line), allowed) && push!(failures, "unexpected: $line")
     end
-    occursin("GodotJL: Julia", output) || push!(failures, "Julia runtime did not start")
+    occursin("Godot-julia: Julia", output) || push!(failures, "Julia runtime did not start")
     return failures
 end
 

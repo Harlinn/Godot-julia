@@ -4,6 +4,6 @@ config_version=5
 
 [application]
 
-config/name="GodotJL Smoke Test"
+config/name="Godot-julia Smoke Test"
 run/main_scene="res://main.tscn"
 config/features=PackedStringArray("4.7")

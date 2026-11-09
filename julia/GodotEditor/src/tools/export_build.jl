@@ -1,3 +1,6 @@
+# Copyright 2026 Espen Harlinn
+# SPDX-License-Identifier: Apache-2.0
+
 # Worker command `export <config.toml>`: build the Julia payload of an export (included by worker.jl).
 # sysimage mode: compile Godot, the project's packages and every script into a system image (`julia --output-o`,
 # linked with Julia's bundled lld), like C#'s ReadyToRun publish. jit mode: ship package sources and compiled caches.
@@ -102,7 +105,9 @@ function build_image(cfg, data::String, scripts::Dict{String, String}, deps::Dic
     image = joinpath(data, "sys." * image_ext())
     project = isfile(TOML_PATH) ? PROJECT : joinpath(data, "env")
     cpu_target = get(ENV, "GDJL_EXPORT_CPU_TARGET", DEFAULT_CPU_TARGET)
-    flags = debug ? ["-O2", "-g1"] : ["-O3", "-g0"]
+    # Optimization follows the configuration. Line info: always in debug images, in release images only with
+    # julia/export/include_debug_symbols (off by default; C# defaults it on).
+    flags = [debug ? "-O2" : "-O3", debug || get(cfg, "debug_symbols", false) === true ? "-g1" : "-g0"]
     step("Compiling the system image ($(debug ? "debug" : "release"), cpu target $cpu_target)")
     t = time()
     default_image = unsafe_string(Base.JLOptions().image_file)

@@ -1,3 +1,6 @@
+# Copyright 2026 Espen Harlinn
+# SPDX-License-Identifier: Apache-2.0
+
 # Debugging support: script errors located at `res://` frames, Julia frames for Godot's backtraces and script debugger,
 # break on error, and `Godot.@breakpoint`. Behavior ported from CSharpLanguage (modules/mono/csharp_script.cpp:
 # debug_get_current_stack_info, debug_break, debug_get_error) and GodotSharp/Core/DebuggingUtils.cs
@@ -97,7 +100,7 @@ function report_exception(err, bt; warning::Bool = false)
             tls[:gdjl_pending_bt] = prev
         end
     catch inner
-        Core.print(Core.stderr, "GodotJL: failed to report a Julia exception: ", typeof(inner), "\n")
+        Core.print(Core.stderr, "Godot-julia: failed to report a Julia exception: ", typeof(inner), "\n")
     end
     return nothing
 end
@@ -108,7 +111,7 @@ function report_unhandled(err, bt)
     try
         break_on_error(err, bt)
     catch inner
-        Core.print(Core.stderr, "GodotJL: debugger break failed: ", typeof(inner), "\n")
+        Core.print(Core.stderr, "Godot-julia: debugger break failed: ", typeof(inner), "\n")
     end
     return nothing
 end

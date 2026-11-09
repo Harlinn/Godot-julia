@@ -8,7 +8,7 @@ This is a finished version of the game featured in the
 tutorial in the documentation, but ported to Julia. For more details,
 consider following the tutorial in the documentation.
 
-Language: Julia ([GodotJL](../../README.md))
+Language: Julia ([Godot-julia](../../README.md))
 
 Renderer: Compatibility
 

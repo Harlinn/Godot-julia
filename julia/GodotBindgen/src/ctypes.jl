@@ -1,3 +1,6 @@
+# Copyright 2026 Espen Harlinn
+# SPDX-License-Identifier: Apache-2.0
+
 # Mapping of GDExtension C types (as spelled in gdextension_interface.json) to Julia `ccall` types.
 
 const C_SCALARS = Dict(

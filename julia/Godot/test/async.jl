@@ -1,3 +1,6 @@
+# Copyright 2026 Espen Harlinn
+# SPDX-License-Identifier: Apache-2.0
+
 # Main-thread scheduler and awaiting. parity: 6.4, 6.5
 using Godot.Runtime: Runtime
 

@@ -1,3 +1,6 @@
+# Copyright 2026 Espen Harlinn
+# SPDX-License-Identifier: Apache-2.0
+
 # In-engine tests for Godot.FFI. parity: 1.7
 using Test
 using GodotTestRunner

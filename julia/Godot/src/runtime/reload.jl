@@ -1,3 +1,6 @@
+# Copyright 2026 Espen Harlinn
+# SPDX-License-Identifier: Apache-2.0
+
 # Hot reload of Julia scripts. Behavior ported from CSharpLanguage::reload_assemblies / CSharpScript::reload
 # (modules/mono/csharp_script.cpp), ScriptSerializationGenerator and DelegateUtils (Godot.SourceGenerators,
 # GodotSharp/Core/DelegateUtils.cs), and GDScriptLanguage::reload_scripts (modules/gdscript/gdscript.cpp)
@@ -182,8 +185,24 @@ function transfer_state(si::ScriptInstance, info::ScriptClassInfo, replaced::IdD
     return obj
 end
 
+"""
+Run the hot-reload hook `name` (`_before_reload` on the old instance, `_after_reload` on the new one) if the script
+defines it (C#: `ISerializationListener.OnBeforeSerialize` / `OnAfterDeserialize`). Errors are reported, not thrown.
+"""
+function reload_hook(name::Symbol, @nospecialize(obj))
+    f = getglobal(Godot, name)
+    isempty(self_methods(f, typeof(obj))) && return nothing
+    try
+        Base.invokelatest(f, obj)
+    catch e
+        report_exception(e, catch_backtrace())
+    end
+    return nothing
+end
+
 function migrate_instances!(order::Vector{ScriptState})
     replaced = IdDict{Any, Any}()
+    migrated = Any[]
     for st in order
         info = st.info
         for si in instances_of(st)
@@ -193,6 +212,7 @@ function migrate_instances!(order::Vector{ScriptState})
                 continue
             end
             si.info === info && (si.suspended = false; continue)
+            si.suspended || reload_hook(:_before_reload, si.obj)
             new = try
                 transfer_state(si, info, replaced)
             catch e
@@ -206,12 +226,14 @@ function migrate_instances!(order::Vector{ScriptState})
             si.info = info
             si.suspended = false
             Godot.bind_wrapper!(si.owner, new)   # the old struct now reads as a freed object
+            push!(migrated, new)
         end
     end
     if !isempty(replaced)
         retarget_fields!(replaced)
         retarget_callables!(replaced)
     end
+    foreach(o -> reload_hook(:_after_reload, o), migrated)
     retire_generations!()
     return nothing
 end

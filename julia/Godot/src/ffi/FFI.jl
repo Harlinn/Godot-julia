@@ -1,3 +1,6 @@
+# Copyright 2026 Espen Harlinn
+# SPDX-License-Identifier: Apache-2.0
+
 """
     Godot.FFI
 
@@ -14,7 +17,7 @@ module FFI
 
 const GENERATED_DIR = joinpath(@__DIR__, "..", "generated")
 isfile(joinpath(GENERATED_DIR, "interface.jl")) ||
-    error("Godot bindings have not been generated; run `julia scripts/generate_bindings.jl` in the GodotJL repository.")
+    error("Godot bindings have not been generated; run `julia scripts/generate_bindings.jl` in a clone of https://github.com/Harlinn/Godot-julia.")
 
 "Supertype of the opaque, non-Variant builtin values (`RawString`, `RawArray`, ...)."
 abstract type RawBuiltin end

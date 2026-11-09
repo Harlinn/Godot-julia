@@ -1,3 +1,6 @@
+# Copyright 2026 Espen Harlinn
+# SPDX-License-Identifier: Apache-2.0
+
 # Evaluates each GDScript expression from the cases file and writes "<expression>\t<var_to_str(result)>" lines.
 # Run via scripts/make_math_golden.jl.
 extends SceneTree

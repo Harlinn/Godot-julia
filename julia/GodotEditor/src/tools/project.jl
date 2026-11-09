@@ -1,3 +1,6 @@
+# Copyright 2026 Espen Harlinn
+# SPDX-License-Identifier: Apache-2.0
+
 # Project bootstrap (C#: the .csproj/.sln GodotTools generates for the first C# script).
 
 const GODOT_PKG_UUID = "f37c0048-e111-4823-9dfb-7d6ad2e3f4cb"

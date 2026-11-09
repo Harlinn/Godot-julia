@@ -1,3 +1,6 @@
+# Copyright 2026 Espen Harlinn
+# SPDX-License-Identifier: Apache-2.0
+
 # Thin wrappers over Godot's error reporting that take Julia source locations.
 
 const SourceLocation = Union{LineNumberNode, Base.StackFrame}

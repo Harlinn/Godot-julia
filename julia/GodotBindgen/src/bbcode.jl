@@ -1,3 +1,6 @@
+# Copyright 2026 Espen Harlinn
+# SPDX-License-Identifier: Apache-2.0
+
 # Godot class-reference BBCode → Markdown for docstrings.
 
 function dedent(code::AbstractString)

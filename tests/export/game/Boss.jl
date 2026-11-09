@@ -1,3 +1,6 @@
+# Copyright 2026 Espen Harlinn
+# SPDX-License-Identifier: Apache-2.0
+
 using Godot
 
 # Inherits from the global class Enemy by name; resolved when the system image is built.

@@ -1,3 +1,6 @@
+# Copyright 2026 Espen Harlinn
+# SPDX-License-Identifier: Apache-2.0
+
 # Operations shared by Vector2/3/4 and Vector2i/3i/4i, generated per type.
 # Ported from Godot's core/math/vector*.h/.cpp and GodotSharp/Core/Vector*.cs (MIT, Godot contributors).
 
@@ -168,9 +171,9 @@ for V in (:Vector2, :Vector3, :Vector4)
         return l == 0 ? a : a / sqrt(l)
     end
 end
-for V in (:Vector3, :Vector4)
+for V in (:Vector2, :Vector3, :Vector4)
     @eval begin
-        "Componentwise reciprocal."
+        "Componentwise reciprocal (C#: `Inverse()`; Godot has no `Vector2.inverse`, C# does)."
         inverse(a::$V) = one($V) / a
     end
 end

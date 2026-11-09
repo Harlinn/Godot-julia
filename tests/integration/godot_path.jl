@@ -1,3 +1,6 @@
+# Copyright 2026 Espen Harlinn
+# SPDX-License-Identifier: Apache-2.0
+
 # Locating the Godot editor binary for the test runners: GODOT, then .tools/godot/, then `godot` on PATH.
 
 function find_godot(root::AbstractString)

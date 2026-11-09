@@ -1,3 +1,6 @@
+# Copyright 2026 Espen Harlinn
+# SPDX-License-Identifier: Apache-2.0
+
 using Godot.Runtime: Runtime
 
 # Export builds (ADR 0014): scripts compiled ahead of time and loaded by path without their sources. parity: 10.1, 10.8

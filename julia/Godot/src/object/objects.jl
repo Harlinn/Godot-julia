@@ -1,3 +1,6 @@
+# Copyright 2026 Espen Harlinn
+# SPDX-License-Identifier: Apache-2.0
+
 # Hand-written behavior of engine object wrappers: properties, equality, casting, dynamic access, free.
 # Ported from GodotSharp/Core/GodotObject.base.cs and Node.cs (GetNode<T>) (MIT, Godot contributors).
 

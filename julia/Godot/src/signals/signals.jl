@@ -1,3 +1,6 @@
+# Copyright 2026 Espen Harlinn
+# SPDX-License-Identifier: Apache-2.0
+
 # Signals with Julia callables. Ported from GodotSharp/Core/Signal.cs and DelegateUtils.cs (MIT, Godot contributors).
 
 """

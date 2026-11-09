@@ -1,4 +1,7 @@
 #!/usr/bin/env julia
+# Copyright 2026 Espen Harlinn
+# SPDX-License-Identifier: Apache-2.0
+
 # Runs the whole test suite locally (what CI runs). Usage, from the repository root:
 #   julia scripts/test_all.jl [--no-build] [--precision=single|double] [--exports] [--benchmarks] [--no-leaks]
 # Steps: build native/ (editor target; plus templates with --exports), generate bindings, Julia unit tests of every
@@ -43,6 +46,7 @@ function main()
         step("unit tests: $pkg", `$JULIA --startup-file=no julia/$pkg/test/runtests.jl`; env = Dict("JULIA_LOAD_PATH" => load_path))
     end
     step("parity-test check", `$JULIA --startup-file=no scripts/check_parity_tests.jl`)
+    step("license headers", `$JULIA --startup-file=no scripts/license_headers.jl --check`)
     leaks = flag("--no-leaks") ? String[] : ["--leaks"]
     step("integration tests" * (isempty(leaks) ? "" : " (with leak checks)"), `$JULIA --startup-file=no tests/integration/run.jl $leaks`)
     step("doc tests", `$JULIA --startup-file=no scripts/doctest_docs.jl`)

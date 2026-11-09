@@ -1,3 +1,6 @@
+# Copyright 2026 Espen Harlinn
+# SPDX-License-Identifier: Apache-2.0
+
 # Builtin math golden tests against Godot. parity: 3.1–3.3
 using Godot: GodotEnum, MATH_TYPES
 using LinearAlgebra: LinearAlgebra
@@ -129,6 +132,11 @@ const GOLDEN = joinpath(@__DIR__, "fixtures", "math_golden.txt")
         @test hash(Vector2(1, 2)) == hash(Vector2(1, 2)) && Dict(Vector2i(1, 2) => 1)[Vector2i(1, 2)] == 1
         @test Mathf.TAU == 2π && Mathf.EPSILON == 1e-5 && Mathf.wrap(7, 0, 5) == 2 && Mathf.round_to_int(2.5) == 3
         @test lerp(1.0, 3.0, 0.5) == 2.0 && snapped(7, 5) == 5 && posmod(-1, 3) == 2
+        # C#-only members found by scripts/api_diff.jl (phase 17).
+        @test inverse(Vector2(2, 4)) == Vector2(0.5, 0.25)
+        pl = Plane(Vector3(0, 1, 0), 3)
+        @test (pl.x, pl.y, pl.z, pl.d) == (0, 1, 0, 3) && :x in propertynames(pl)
+        @test Vector2i_MIN == Vector2i(typemin(Int32), typemin(Int32)) && Vector3i_MAX.z == typemax(Int32)
     end
 
     @testset "allocation-free" begin

@@ -1,6 +1,6 @@
 # Demos
 
-Julia ports of the official C# demos from [godot-demo-projects](https://github.com/godotengine/godot-demo-projects) (`mono/`), plus an editor-plugin demo written for GodotJL.
+Julia ports of the official C# demos from [godot-demo-projects](https://github.com/godotengine/godot-demo-projects) (`mono/`), plus an editor-plugin demo written for Godot-julia.
 
 | Demo | Source | Shows |
 |------|--------|-------|
@@ -20,4 +20,4 @@ Open a demo folder in the Godot editor after copying `addons/godot_julia` into i
 
 ## License
 
-The ported code and scenes are MIT licensed by the Godot Engine contributors ([LICENSE.md](LICENSE.md)); the assets' own licenses are listed in each demo's README. The editor-plugin demo is part of GodotJL.
+The four ported demos (code and scenes) are MIT licensed by the Godot Engine contributors ([LICENSE.md](LICENSE.md)); the assets' own licenses are listed in each demo's README. The editor-plugin demo and the demo runner (`run.jl`, `driver.gd`, `editor_driver.gd`) are part of Godot-julia and licensed under the Apache License 2.0 ([LICENSE](../LICENSE)).

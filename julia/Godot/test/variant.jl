@@ -1,3 +1,6 @@
+# Copyright 2026 Espen Harlinn
+# SPDX-License-Identifier: Apache-2.0
+
 # Engine-free checks for the Variant layer (marshalling itself is tested in tests/integration/variant).
 using Godot: isvarianttype, typed_info, element_type, packed_for, godot_class_name, VariantConversionError, FFI
 

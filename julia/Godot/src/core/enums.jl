@@ -1,3 +1,6 @@
+# Copyright 2026 Espen Harlinn
+# SPDX-License-Identifier: Apache-2.0
+
 # Behavior shared by all generated enum and bitfield types.
 
 Base.Integer(x::GodotEnum) = x.value

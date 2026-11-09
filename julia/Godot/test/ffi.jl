@@ -1,3 +1,6 @@
+# Copyright 2026 Espen Harlinn
+# SPDX-License-Identifier: Apache-2.0
+
 using Godot.FFI: FFI
 
 function fake_method_ptrcall(::Ptr{Cvoid}, obj::Ptr{Cvoid}, args::Ptr{Ptr{Cvoid}}, ret::Ptr{Cvoid})

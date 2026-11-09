@@ -1,3 +1,6 @@
+# Copyright 2026 Espen Harlinn
+# SPDX-License-Identifier: Apache-2.0
+
 # Callables backed by Julia callables (GDExtension custom callables). Every entry point catches exceptions.
 
 "What a custom Callable pins: the Julia callable (swapped on hot reload) and the hash Godot saw at creation."

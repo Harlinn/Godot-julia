@@ -1,6 +1,6 @@
 # Async, tasks and threads
 
-Counterpart of the async sections of Godot's C# docs (`async`/`await`, `ToSignal`, `GodotSynchronizationContext`). Julia has tasks instead of `async` methods. GodotJL runs **Godot tasks** on the main thread and resumes them while Godot processes frames, so after waiting a task can safely use the scene tree.
+Counterpart of the async sections of Godot's C# docs (`async`/`await`, `ToSignal`, `GodotSynchronizationContext`). Julia has tasks instead of `async` methods. Godot-julia runs **Godot tasks** on the main thread and resumes them while Godot processes frames, so after waiting a task can safely use the scene tree.
 
 ## Godot tasks
 

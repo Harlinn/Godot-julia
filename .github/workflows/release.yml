@@ -1,3 +1,6 @@
+# Copyright 2026 Espen Harlinn
+# SPDX-License-Identifier: Apache-2.0
+
 name: Release
 
 # Push a tag vX.Y.Z (matching julia/Godot/Project.toml) to build the addon for every platform, attach the zip to a
@@ -8,7 +11,7 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: write
+  contents: read
 
 jobs:
   native:
@@ -17,19 +20,22 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
+        # Linux libraries are built on the oldest supported runner image: they then load on any distribution with
+        # glibc >= 2.35 (libstdc++ is linked statically). macOS libraries target macOS 11 (the arm64 minimum) rather
+        # than the runner's SDK version, which dyld would refuse on older systems.
         include:
           - { os: windows-latest, platform: windows, arch: x86_64, precision: single }
           - { os: windows-latest, platform: windows, arch: x86_64, precision: double }
           - { os: windows-latest, platform: windows, arch: arm64, precision: single }
-          - { os: ubuntu-latest, platform: linux, arch: x86_64, precision: single }
-          - { os: ubuntu-latest, platform: linux, arch: x86_64, precision: double }
-          - { os: ubuntu-24.04-arm, platform: linux, arch: arm64, precision: single }
-          - { os: macos-latest, platform: macos, arch: universal, precision: single }
+          - { os: ubuntu-22.04, platform: linux, arch: x86_64, precision: single }
+          - { os: ubuntu-22.04, platform: linux, arch: x86_64, precision: double }
+          - { os: ubuntu-22.04-arm, platform: linux, arch: arm64, precision: single }
+          - { os: macos-latest, platform: macos, arch: universal, precision: single, extra: macos_deployment_target=11.0 }
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           submodules: recursive
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@v7
         with:
           python-version: "3.12"
       - run: python -m pip install scons
@@ -38,28 +44,31 @@ jobs:
         run: |
           for target in editor template_debug template_release; do
             scons -C native platform=${{ matrix.platform }} arch=${{ matrix.arch }} precision=${{ matrix.precision }} \
-                  target=$target dev_fallbacks=no -j4
+                  target=$target dev_fallbacks=no ${{ matrix.extra }} -j4
           done
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: bin-${{ matrix.platform }}-${{ matrix.arch }}-${{ matrix.precision }}
           path: |
             addons/godot_julia/bin/*.dll
             addons/godot_julia/bin/*.so
             addons/godot_julia/bin/*.framework
+          if-no-files-found: error
 
   package:
     name: Package addon and release
     needs: native
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           submodules: recursive
-      - uses: julia-actions/setup-julia@v2
+      - uses: julia-actions/setup-julia@v3
         with:
           version: "1"
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v8
         with:
           path: addons/godot_julia/bin
           pattern: bin-*
@@ -69,16 +78,24 @@ jobs:
         run: |
           version=$(julia --startup-file=no -e 'import TOML; print(TOML.parsefile("julia/Godot/Project.toml")["version"])')
           test "v$version" = "${GITHUB_REF_NAME}" || { echo "tag ${GITHUB_REF_NAME} != Godot package v$version"; exit 1; }
-      - run: julia --startup-file=no scripts/fetch_godot.jl
-      - run: julia --startup-file=no scripts/generate_bindings.jl
-      - run: julia --startup-file=no scripts/package_addon.jl dist
-      - uses: actions/upload-artifact@v4
+      # GODOT lets fetch_api.jl dump the API with class docs; without it the shipped bindings have no docstrings.
+      - name: Fetch pinned Godot
+        run: |
+          julia --startup-file=no scripts/fetch_godot.jl
+          echo "GODOT=$(julia --startup-file=no -e 'include("tests/integration/godot_path.jl"); print(find_godot(pwd()))')" >> "$GITHUB_ENV"
+      # Bindings are precision specific, so single and double precision ship as separate zips.
+      - run: julia --startup-file=no scripts/generate_bindings.jl --precision=single
+      - run: julia --startup-file=no scripts/package_addon.jl dist --precision=single
+      - run: julia --startup-file=no scripts/generate_bindings.jl --precision=double
+      - run: julia --startup-file=no scripts/package_addon.jl dist --precision=double
+      - uses: actions/upload-artifact@v7
         with:
           name: addon
           path: dist/*.zip
+          if-no-files-found: error
       - name: GitHub release
         if: startsWith(github.ref, 'refs/tags/v')
-        uses: softprops/action-gh-release@v2
+        uses: softprops/action-gh-release@v3
         with:
           files: dist/*.zip
           generate_release_notes: true
@@ -88,8 +105,10 @@ jobs:
     needs: package
     if: startsWith(github.ref, 'refs/tags/v')
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     steps:
       # JuliaRegistrator (GitHub app, installed on the repository) opens the General registry pull request.
-      - uses: peter-evans/commit-comment@v3
+      - uses: peter-evans/commit-comment@v4
         with:
           body: "@JuliaRegistrator register subdir=julia/Godot"

@@ -1,3 +1,6 @@
+# Copyright 2026 Espen Harlinn
+# SPDX-License-Identifier: Apache-2.0
+
 using Godot
 
 # A @tool node: it runs in the editor too, so the spinner turns and redraws while you edit the scene.

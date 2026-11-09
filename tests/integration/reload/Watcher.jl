@@ -1,3 +1,6 @@
+# Copyright 2026 Espen Harlinn
+# SPDX-License-Identifier: Apache-2.0
+
 using Godot
 
 # Not reloaded with Mover, but holds references to a Mover instance (a field and a connected closure).

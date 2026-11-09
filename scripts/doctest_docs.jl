@@ -1,4 +1,7 @@
 #!/usr/bin/env julia
+# Copyright 2026 Espen Harlinn
+# SPDX-License-Identifier: Apache-2.0
+
 # Extracts every ```julia block from docs/user/*.md and runs it inside a headless Godot project (the doc test).
 # Usage: julia scripts/doctest_docs.jl [page.md...]
 #
@@ -9,7 +12,7 @@
 #   `@test` from Test is available; each block must run without throwing.
 # - ```julia {no-run} marks snippets that cannot run on their own (shell, editor-only or fragment); the reason
 #   goes on the first line as a comment.
-# parity: 11.1
+# parity: 9.6, 11.1
 
 const ROOT = normpath(joinpath(@__DIR__, ".."))
 const DOCS = joinpath(ROOT, "docs", "user")
@@ -57,7 +60,7 @@ function write_project(pages)
 
         [application]
 
-        config/name="GodotJL doc tests"
+        config/name="Godot-julia doc tests"
         run/main_scene="res://main.tscn"
         config/features=PackedStringArray("4.7")
 
@@ -142,7 +145,9 @@ function write_project(pages)
 end
 
 function main()
-    files = isempty(ARGS) ? filter(f -> endswith(f, ".md"), readdir(DOCS; join = true)) : abspath.(ARGS)
+    # Pages are paths or bare names of docs/user pages (`julia_signals.md`).
+    page_file(a) = isfile(a) ? abspath(a) : joinpath(DOCS, a)
+    files = isempty(ARGS) ? filter(f -> endswith(f, ".md"), readdir(DOCS; join = true)) : page_file.(ARGS)
     pages = [(basename(f), extract(f)) for f in files]
     nblocks = sum(length(b) for (_, b) in pages)
     norun = sum(count(x -> x.norun, b) for (_, b) in pages)

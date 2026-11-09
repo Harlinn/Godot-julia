@@ -1,3 +1,6 @@
+# Copyright 2026 Espen Harlinn
+# SPDX-License-Identifier: Apache-2.0
+
 # Method hash lookup backed by generated/method_hashes.tsv (loaded lazily on first use).
 
 const HASHES_FILE = joinpath(GENERATED_DIR, "method_hashes.tsv")

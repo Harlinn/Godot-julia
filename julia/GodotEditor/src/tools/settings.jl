@@ -1,3 +1,6 @@
+# Copyright 2026 Espen Harlinn
+# SPDX-License-Identifier: Apache-2.0
+
 # Editor and project settings of the Julia tools (C#: GodotTools `dotnet/*` settings in GodotSharpEditor.cs).
 
 const S_PACKAGE_NAME = "julia/project/package_name"
@@ -6,12 +9,16 @@ const S_EXEC_PATH = "julia/editor/custom_exec_path"
 const S_EXEC_ARGS = "julia/editor/custom_exec_path_args"
 const S_VERBOSITY = "julia/build/verbosity"
 const S_BUILD_ON_PLAY = "julia/build/build_on_play"
+const S_PROBLEMS_LAYOUT = "julia/build/problems_layout"
 
 @enum ExternalEditor EDITOR_NONE EDITOR_VSCODE EDITOR_VSCODIUM EDITOR_EMACS EDITOR_VIM EDITOR_CUSTOM
 const EXTERNAL_EDITOR_NAMES = "None,VS Code,VSCodium,Emacs,Vim/Neovim,Custom"
 
 @enum BuildVerbosity VERBOSITY_QUIET VERBOSITY_NORMAL VERBOSITY_DETAILED
 const VERBOSITY_NAMES = "Quiet,Normal,Detailed"
+
+@enum ProblemsLayout PROBLEMS_LIST PROBLEMS_TREE
+const PROBLEMS_LAYOUT_NAMES = "View as List,View Grouped by File"
 
 const VT_BOOL, VT_INT, VT_STRING = 1, 2, 4
 const HINT_ENUM, HINT_GLOBAL_FILE = 2, 15
@@ -45,6 +52,7 @@ function define_settings!()
     define_editor_setting(S_EXEC_ARGS, "{file}", VT_STRING)
     define_editor_setting(S_VERBOSITY, Int(VERBOSITY_NORMAL), VT_INT, HINT_ENUM, VERBOSITY_NAMES)
     define_editor_setting(S_BUILD_ON_PLAY, false, VT_BOOL)
+    define_editor_setting(S_PROBLEMS_LAYOUT, Int(PROBLEMS_TREE), VT_INT, HINT_ENUM, PROBLEMS_LAYOUT_NAMES)
     return nothing
 end
 
@@ -53,3 +61,5 @@ editor_setting(name, default) = (v = Godot.get_setting(editor_settings(), name);
 external_editor() = ExternalEditor(clamp(Int(editor_setting(S_EXTERNAL_EDITOR, 0)), 0, length(instances(ExternalEditor)) - 1))
 build_verbosity() = BuildVerbosity(clamp(Int(editor_setting(S_VERBOSITY, 1)), 0, 2))
 build_on_play() = editor_setting(S_BUILD_ON_PLAY, false) === true
+problems_layout() = ProblemsLayout(clamp(Int(editor_setting(S_PROBLEMS_LAYOUT, 1)), 0, 1))
+set_problems_layout!(l::ProblemsLayout) = (Godot.set_setting(editor_settings(), S_PROBLEMS_LAYOUT, Int(l)); nothing)

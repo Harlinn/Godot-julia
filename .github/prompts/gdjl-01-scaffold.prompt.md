@@ -4,7 +4,7 @@ description: "Phase 1: scaffold the Godot+Julia repository (GDExtension host, Ju
 argument-hint: "Optional: Godot 4.x tag to pin, e.g. 4.5-stable"
 agent: agent
 ---
-Scaffold the GodotJL repository as described in the [project instructions](../copilot-instructions.md). Godot tag to pin: `${input:godotTag:latest stable 4.x tag}`.
+Scaffold the Godot-julia repository as described in the [project instructions](../copilot-instructions.md). Godot tag to pin: `${input:godotTag:latest stable 4.x tag}`.
 
 ## Tasks
 

@@ -1,3 +1,6 @@
+# Copyright 2026 Espen Harlinn
+# SPDX-License-Identifier: Apache-2.0
+
 """
     Godot
 
@@ -46,6 +49,7 @@ export GodotObject, GodotEnum, GodotBitfield, NodePath, RID, GDArray, GDDictiona
        variant_type, isvarianttype, VariantConversionError, StringName, FreedObjectError, as, is_instance_valid,
        weakref, set!, has_property, @godot_class, @tool, @global_class, @icon, @rpc, script_type, SignalName,
        PropertyName, MethodName, callable_target, connect_callable, godot_task, @async_godot, @await, to_signal,
-       SignalAwaiter, SignalCancelled, next_frame, next_physics_frame, delay, @breakpoint, @feature
+       SignalAwaiter, SignalCancelled, next_frame, next_physics_frame, delay, @breakpoint, @feature, get_child_or_null,
+       get_owner_or_null, get_parent_or_null, instantiate_or_null, glob_match
 
 end # module Godot

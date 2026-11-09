@@ -1,3 +1,6 @@
+# Copyright 2026 Espen Harlinn
+# SPDX-License-Identifier: Apache-2.0
+
 """
     GodotEditor.Tools
 
@@ -15,6 +18,7 @@ include("external.jl")
 include("project.jl")
 include("jobs.jl")
 include("export.jl")
+include("translation.jl")
 include("panel.jl")
 include("plugin.jl")
 
@@ -30,6 +34,7 @@ function install!()
         :export_begin => export_begin,
         :export_file => export_file,
         :export_end => export_end,
+        :translation_parse_file => translation_parse_file,
     ))
     return nothing
 end

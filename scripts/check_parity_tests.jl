@@ -1,4 +1,7 @@
 #!/usr/bin/env julia
+# Copyright 2026 Espen Harlinn
+# SPDX-License-Identifier: Apache-2.0
+
 # Checks that every DONE row of docs/csharp-parity-matrix.md is covered by a test that tags it, e.g.
 #   # parity: 5.6, 5.7, 6.1–6.6
 # in julia/*/test/, tests/integration/, tests/export/, demos/run.jl and scripts/doctest_docs.jl (ranges use - or –

@@ -1,3 +1,6 @@
+# Copyright 2026 Espen Harlinn
+# SPDX-License-Identifier: Apache-2.0
+
 extends Node
 # Drives the Julia script tests from GDScript (the engine side of the C# parity checks).
 # parity: 4.3, 4.9, 5.1–5.3, 5.5–5.18

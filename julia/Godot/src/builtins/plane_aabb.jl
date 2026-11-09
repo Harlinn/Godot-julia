@@ -1,3 +1,6 @@
+# Copyright 2026 Espen Harlinn
+# SPDX-License-Identifier: Apache-2.0
+
 # Plane and AABB.
 # Ported from Godot's core/math/plane.h/.cpp, aabb.h/.cpp and GodotSharp/Core/Plane.cs, Aabb.cs (MIT, Godot contributors).
 
@@ -14,6 +17,14 @@ end
 
 Base.:+(p::Plane) = p
 Base.:-(p::Plane) = Plane(-p.normal, -p.d)
+# `p.x/y/z` are the normal's components (C#: `Plane.X/Y/Z`).
+@inline function Base.getproperty(p::Plane, s::Symbol)
+    s === :x && return getfield(p, :normal).x
+    s === :y && return getfield(p, :normal).y
+    s === :z && return getfield(p, :normal).z
+    return getfield(p, s)
+end
+Base.propertynames(::Plane) = (:normal, :d, :x, :y, :z)
 Base.:(==)(a::Plane, b::Plane) = a.normal == b.normal && a.d == b.d
 Base.show(io::IO, p::Plane) = print(io, "Plane(", p.normal.x, ", ", p.normal.y, ", ", p.normal.z, ", ", p.d, ")")
 

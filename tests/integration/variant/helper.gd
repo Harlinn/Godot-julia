@@ -1,3 +1,6 @@
+# Copyright 2026 Espen Harlinn
+# SPDX-License-Identifier: Apache-2.0
+
 extends Node
 # GDScript side of the Variant tests: identity round trips, typed arrays, signals and Julia Callables.
 

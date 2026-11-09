@@ -1,3 +1,6 @@
+# Copyright 2026 Espen Harlinn
+# SPDX-License-Identifier: Apache-2.0
+
 # Basis: stored as rows (memory layout); `b.x`, `b.y`, `b.z` and `Basis(x, y, z)` are the columns, as in GDScript and C#.
 # Ported from Godot's core/math/basis.h/.cpp and GodotSharp/Core/Basis.cs (MIT, Godot contributors).
 

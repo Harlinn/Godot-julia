@@ -1,3 +1,6 @@
+# Copyright 2026 Espen Harlinn
+# SPDX-License-Identifier: Apache-2.0
+
 # Main-thread scheduling of Julia tasks: GodotSynchronizationContext / GodotTaskScheduler parity.
 # Ported from GodotSharp/Core/GodotSynchronizationContext.cs and GodotTaskScheduler.cs (MIT, Godot contributors).
 # Godot tasks are sticky to Julia thread 1 (Godot's main thread, where Julia was initialized). They run when that

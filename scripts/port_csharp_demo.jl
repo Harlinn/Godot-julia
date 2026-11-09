@@ -1,4 +1,7 @@
 #!/usr/bin/env julia
+# Copyright 2026 Espen Harlinn
+# SPDX-License-Identifier: Apache-2.0
+
 # Copies a C# demo from godot-demo-projects (mono/<name>) into demos/<dest>, converting the project to Julia:
 # drops C# project files and .cs scripts, points scene script references at .jl files, renames signal
 # connection methods and exported properties to snake_case, removes the [dotnet] section and the "C#" feature.

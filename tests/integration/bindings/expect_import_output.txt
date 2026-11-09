@@ -1,1 +1,1 @@
-GodotJL: editor API (Godot.Editor) loaded
+Godot-julia: editor API (Godot.Editor) loaded

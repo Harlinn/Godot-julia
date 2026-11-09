@@ -1,3 +1,6 @@
+# Copyright 2026 Espen Harlinn
+# SPDX-License-Identifier: Apache-2.0
+
 """
     GodotBindgen
 
@@ -9,6 +12,9 @@ module GodotBindgen
 using JSON
 
 const REPO_ROOT = normpath(joinpath(@__DIR__, "..", "..", ".."))
+
+"Second line of every generated file: the API data and docs come from Godot."
+const SOURCE_NOTICE = "# Derived from the Godot Engine API and class reference (MIT License, Godot Engine contributors)."
 
 "Directory where `scripts/fetch_api.jl` stores the dumped API files."
 api_dir() = joinpath(REPO_ROOT, "native", "api")

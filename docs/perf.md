@@ -1,6 +1,6 @@
 # Performance Log
 
-Measurements from the `GodotJL: Julia ...` startup line. Record each measurement with its date, machine, and versions.
+Measurements from the `Godot-julia: Julia ...` startup line. Record each measurement with its date, machine, and versions.
 
 ## Cold start (native host → `Godot.Runtime` ready)
 

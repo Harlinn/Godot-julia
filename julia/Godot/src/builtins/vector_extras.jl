@@ -1,3 +1,6 @@
+# Copyright 2026 Espen Harlinn
+# SPDX-License-Identifier: Apache-2.0
+
 # Members specific to Vector2 and Vector3.
 # Ported from Godot's core/math/vector2.cpp, vector3.cpp and GodotSharp/Core/Vector2.cs, Vector3.cs (MIT, Godot contributors).
 

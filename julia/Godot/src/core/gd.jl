@@ -1,3 +1,6 @@
+# Copyright 2026 Espen Harlinn
+# SPDX-License-Identifier: Apache-2.0
+
 # Hand-written additions to `GD` (C#'s GD class has these as conveniences over the engine API).
 
 """

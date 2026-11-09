@@ -1,5 +1,8 @@
 #!/usr/bin/env julia
-# GodotJL debug REPL client: connects to the Julia debug server of a running game (debug build started with
+# Copyright 2026 Espen Harlinn
+# SPDX-License-Identifier: Apache-2.0
+
+# Godot-julia debug REPL client: connects to the Julia debug server of a running game (debug build started with
 # GDJL_DEBUG_PORT=<port> or the `julia/debugger/port` project setting) and evaluates expressions in it.
 # Usage: julia godot_repl.jl [port] [host]      (default 127.0.0.1:47100)
 # While a `Godot.@breakpoint` is active, expressions see its local variables; `continue` (or `c`) resumes the game.

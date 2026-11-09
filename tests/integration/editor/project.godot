@@ -4,7 +4,7 @@ config_version=5
 
 [application]
 
-config/name="GodotJL Editor Test"
+config/name="Godot-julia Editor Test"
 config/features=PackedStringArray("4.7")
 
 [editor_plugins]

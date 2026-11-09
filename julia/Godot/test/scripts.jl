@@ -1,3 +1,6 @@
+# Copyright 2026 Espen Harlinn
+# SPDX-License-Identifier: Apache-2.0
+
 # @godot_class metadata, exports and diagnostics. parity: 5.5, 5.6, 5.19
 using Godot.Runtime: Runtime
 
@@ -153,6 +156,8 @@ end
         @test code("@tool @godot_class mutable struct A16 <: Node\n @export_tool_button (\"Go\",) go = 1\nend") == "GDJL0110"
         @test code("@godot_class mutable struct A17 <: Node\n @signal s(x::Base.RefValue{Int})\nend") == "GDJL0202"
         @test code("@godot_class mutable struct A18 <: Node\n @export xs::GDArray{Base.RefValue{Int}}\nend") == "GDJL0301"
+        @test code("@tool @godot_class mutable struct A19 <: Node\n @export @export_tool_button (\"Go\",) go = f\nend") == "GDJL0006"   # GD0109
+        @test code("@godot_class mutable struct A20 <: Node\n @signal s(x::Int)::Int\nend") == "GDJL0006"   # GD0203
         @test code("@rpc f(x::Int) = 1") == "GDJL0501"
         @test code("@rpc :bogus f(self::Node) = 1") == "GDJL0501"
         @test sprint(showerror, Runtime.ScriptDiagnostic("GDJL0102", "msg")) == "GDJL0102: msg"
@@ -163,6 +168,11 @@ end
                  if endswith(f, ".jl") && !occursin("generated", root)]
         for c in unique(x.match for f in files for x in eachmatch(r"GDJL\d{4}", read(f, String)))
             @test occursin("| $c |", doc)
+        end
+        # Every C# source-generator diagnostic of Godot 4.7.2 is mapped or explained (parity audit, phase 17).
+        for n in (1:3..., 101:111..., 201:203..., 301:303..., 401:402...)
+            c = "GD" * lpad(n, 4, '0')
+            @test occursin(Regex("\\b$c\\b"), doc)
         end
     end
 

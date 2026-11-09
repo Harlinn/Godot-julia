@@ -1,3 +1,6 @@
+# Copyright 2026 Espen Harlinn
+# SPDX-License-Identifier: Apache-2.0
+
 using Godot
 
 # Micro-benchmarks of the hot paths (tests/benchmarks/run.jl compares them with baselines). Each prints

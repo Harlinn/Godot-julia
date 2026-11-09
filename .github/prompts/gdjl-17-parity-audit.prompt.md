@@ -4,7 +4,7 @@ description: "Phase 17: audit Julia support against current Godot C#/.NET capabi
 argument-hint: "Optional: Godot tag to audit against (defaults to GODOT_VERSION)"
 agent: agent
 ---
-Audit GodotJL against Godot's current C#/.NET support. Godot tag: `${input:godotTag:value in GODOT_VERSION}`. Follow the [project instructions](../copilot-instructions.md).
+Audit Godot-julia against Godot's current C#/.NET support. Godot tag: `${input:godotTag:value in GODOT_VERSION}`. Follow the [project instructions](../copilot-instructions.md).
 
 ## Steps
 

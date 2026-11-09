@@ -1,3 +1,6 @@
+# Copyright 2026 Espen Harlinn
+# SPDX-License-Identifier: Apache-2.0
+
 # Variant, typed Variant conversions and the Variant-compatible type trait.
 # Ported from GodotSharp/Core/Variant.cs and NativeInterop/VariantUtils*.cs, Marshaling.cs (MIT, Godot contributors).
 

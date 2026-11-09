@@ -1,3 +1,6 @@
+# Copyright 2026 Espen Harlinn
+# SPDX-License-Identifier: Apache-2.0
+
 @tool
 extends EditorPlugin
 # Injected by demos/run.jl for the editor_plugin demo: checks the Julia plugin's dock and its button, then quits.

@@ -1,3 +1,6 @@
+# Copyright 2026 Espen Harlinn
+# SPDX-License-Identifier: Apache-2.0
+
 # Bindings generator. parity: 2.1, 2.8, 2.12
 using GodotBindgen
 using GodotBindgen: Context, julia_default, method_function, type_spec, bbcode_to_markdown

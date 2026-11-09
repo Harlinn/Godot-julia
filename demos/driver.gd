@@ -1,3 +1,6 @@
+# Copyright 2026 Espen Harlinn
+# SPDX-License-Identifier: Apache-2.0
+
 extends Node
 # Injected by demos/run.jl (via override.cfg) to play each demo headlessly and check that its Julia code ran.
 # Prints "GDJL_DEMO_OK" when the checks pass, "GDJL_DEMO_FAILED: ..." otherwise, then quits.

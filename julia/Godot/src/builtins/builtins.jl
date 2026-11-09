@@ -1,3 +1,6 @@
+# Copyright 2026 Espen Harlinn
+# SPDX-License-Identifier: Apache-2.0
+
 # Hand-written builtin math types (analog of GodotSharp/Core/*.cs). Layouts come from generated/builtin_structs.jl.
 
 include("common.jl")

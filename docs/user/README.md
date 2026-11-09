@@ -1,4 +1,4 @@
-# GodotJL user guide
+# Godot-julia user guide
 
 Julia scripting for Godot 4. These pages mirror Godot's [C# documentation](https://docs.godotengine.org/en/stable/tutorials/scripting/c_sharp/index.html) with every example translated to Julia. All Julia examples run in a headless Godot project as part of the test suite (`julia scripts/doctest_docs.jl`).
 

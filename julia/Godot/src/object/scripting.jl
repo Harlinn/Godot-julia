@@ -1,3 +1,6 @@
+# Copyright 2026 Espen Harlinn
+# SPDX-License-Identifier: Apache-2.0
+
 # Script authoring: `@godot_class`, its annotations and options, and `@rpc` (analog of a C# `partial class Player :
 # Node2D` with Godot's attributes and source generators). Expansion targets live in runtime/scripts.jl.
 
@@ -5,6 +8,17 @@
 for name in Runtime.OBJECT_VIRTUALS
     @eval function $name end
 end
+
+"""
+    Godot._before_reload(self::T) / Godot._after_reload(self::T)
+
+Hot-reload hooks of a script class (C#: `ISerializationListener.OnBeforeSerialize` / `OnAfterDeserialize`).
+`_before_reload` runs on the old instance before its state is transferred to the reloaded script;
+`_after_reload` runs on the new instance once fields, references and connected callables are re-targeted.
+"""
+function _before_reload end
+"See [`_before_reload`](@ref): runs on the new instance after a hot reload (C#: `OnAfterDeserialize`)."
+function _after_reload end
 
 "`SignalName(T)`: named tuple of the signal names of script class `T` (C#: `T.SignalName.HealthChanged`)."
 function SignalName end

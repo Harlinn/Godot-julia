@@ -13,10 +13,15 @@ end
     mode::Mode = Idle
     stats::Stats = Stats(0)
     extra::Int = 42
+    saved::Int = 0
+    restored::Int = 0
     @signal moved(n::Int)
 end
 
 version(self::Mover) = 2
+
+# Hot-reload hook (C#: ISerializationListener.OnAfterDeserialize).
+Godot._after_reload(self::Mover) = (self.restored = self.saved + 1; nothing)
 
 function step(self::Mover)
     self.count += 1

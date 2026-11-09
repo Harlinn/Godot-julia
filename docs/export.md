@@ -5,7 +5,7 @@ Export Julia games the usual way (*Project → Export*): the Julia export plugin
 ## Requirements
 
 - Export templates for the editor's Godot version.
-- The GodotJL template libraries in `addons/godot_julia/bin/` (`template_debug` and `template_release`, built with `scons target=template_debug|template_release`).
+- The Godot-julia template libraries in `addons/godot_julia/bin/` (`template_debug` and `template_release`, built with `scons target=template_debug|template_release`).
 - Export **on the target platform**. The Julia payload (runtime and system image) comes from the editor's Julia installation, so Windows games are exported on Windows, Linux games on Linux and macOS games on macOS, each for the host architecture. Android, iOS and Web exports are not supported.
 
 ## Preset options
@@ -14,8 +14,9 @@ Export Julia games the usual way (*Project → Export*): the Julia export plugin
 |---|---|---|
 | `julia/export/mode` | `sysimage` (default), `jit` | `sysimage`: Godot, the project's packages and the scripts are compiled into a system image (ReadyToRun-like); scripts load without their sources. `jit`: package sources and compiled caches are shipped and scripts run from source (debug exports only; faster to export). |
 | `julia/export/include_sources` | `false` (default) | Keep the `.jl` sources in the PCK. By default they are replaced by empty files, like C# scripts. |
+| `julia/export/include_debug_symbols` | `false` (default) | Keep line information in release system images, so backtraces show file:line in release exports too (C#: `dotnet/include_debug_symbols`, which C# turns on by default). Costs about 100 MiB of payload. Debug exports always keep line information. |
 
-Exporting in `sysimage` mode compiles a system image in a child process (several minutes; progress in the Julia panel or the console). Debug exports are compiled with `-O2` and keep `res://` file:line in backtraces, the Julia debug server and the remote debugger. Release exports use `-O3` without line information.
+Exporting in `sysimage` mode compiles a system image in a child process (several minutes; progress in the Julia panel or the console). Debug exports are compiled with `-O2` and keep the Julia debug server and the remote debugger. Release exports use `-O3`.
 
 ## Scripts that need the engine at load time
 
@@ -47,7 +48,7 @@ Sizes and startup times are recorded in [perf.md](perf.md).
 
 ## macOS signing
 
-Sign `data_*/julia/lib/*.dylib`, the system image and the GodotJL framework along with the app (`codesign --deep` does not descend into the data folder). Notarization requires the hardened runtime with the `com.apple.security.cs.allow-jit` and `com.apple.security.cs.allow-unsigned-executable-memory` entitlements, because Julia's JIT generates code at runtime. This has not been verified yet.
+Sign `data_*/julia/lib/*.dylib`, the system image and the Godot-julia framework along with the app (`codesign --deep` does not descend into the data folder). Notarization requires the hardened runtime with the `com.apple.security.cs.allow-jit` and `com.apple.security.cs.allow-unsigned-executable-memory` entitlements, because Julia's JIT generates code at runtime. This has not been verified yet.
 
 ## Testing exports
 

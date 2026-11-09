@@ -1,3 +1,6 @@
+# Copyright 2026 Espen Harlinn
+# SPDX-License-Identifier: Apache-2.0
+
 # String / StringName / NodePath conversions and the process-wide StringName cache.
 
 "Owned Godot `String` holding a copy of `s`."

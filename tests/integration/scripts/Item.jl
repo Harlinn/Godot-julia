@@ -1,3 +1,6 @@
+# Copyright 2026 Espen Harlinn
+# SPDX-License-Identifier: Apache-2.0
+
 using Godot
 
 # Custom Resource usable in the inspector and in .tres files (C#: [GlobalClass] partial class Item : Resource).

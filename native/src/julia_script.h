@@ -1,3 +1,6 @@
+// Copyright 2026 Espen Harlinn
+// SPDX-License-Identifier: Apache-2.0
+
 #pragma once
 
 // Julia script language shims (analog of modules/mono/csharp_script.h). Static language data lives here; everything

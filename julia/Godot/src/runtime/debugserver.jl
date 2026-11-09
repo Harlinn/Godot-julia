@@ -1,3 +1,6 @@
+# Copyright 2026 Espen Harlinn
+# SPDX-License-Identifier: Apache-2.0
+
 # Debug REPL server (docs/debugging.md): a localhost TCP REPL into the running game, used by the debug client
 # (addons/godot_julia/tools/godot_repl.jl), VS Code's "Connect external REPL" snippet and `Godot.@breakpoint` sessions.
 # Protocol: each request is one line (a Julia string with escaped newlines); each response is text followed by a
@@ -144,9 +147,9 @@ function start_debugging!()
         report_exception(e, catch_backtrace())
         return nothing
     end
-    host_print(PRINT_STDOUT, "GodotJL: Julia debug server listening on 127.0.0.1:$p")
+    host_print(PRINT_STDOUT, "Godot-julia: Julia debug server listening on 127.0.0.1:$p")
     if setting("julia/debugger/wait_for_attach", false) === true || get(ENV, "GDJL_DEBUG_WAIT", "") == "1"
-        host_print(PRINT_STDOUT, "GodotJL: waiting for a debugger to attach on port $p...")
+        host_print(PRINT_STDOUT, "Godot-julia: waiting for a debugger to attach on port $p...")
         wait_for_debug_client!()
     end
     return nothing

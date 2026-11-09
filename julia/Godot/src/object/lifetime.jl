@@ -1,3 +1,6 @@
+# Copyright 2026 Espen Harlinn
+# SPDX-License-Identifier: Apache-2.0
+
 # Object identity and lifetime through GDExtension instance bindings.
 # Ported from Godot's modules/mono/csharp_script.cpp (`_instance_binding_*_callback`, strong/weak GCHandle switching)
 # and GodotSharp/Core/GodotObject.base.cs, DisposablesTracker.cs (MIT, Godot contributors).

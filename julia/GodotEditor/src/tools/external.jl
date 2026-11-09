@@ -1,3 +1,6 @@
+# Copyright 2026 Espen Harlinn
+# SPDX-License-Identifier: Apache-2.0
+
 # External editors (C#: GodotTools/Ides and `CSharpLanguage::open_in_external_editor`). Command construction is pure
 # so it can be unit-tested per OS; launching goes through `OS.create_process`.
 

@@ -1,3 +1,6 @@
+# Copyright 2026 Espen Harlinn
+# SPDX-License-Identifier: Apache-2.0
+
 # OKLab / OKHSL conversions used by Color.from_ok_hsl and the ok_hsl_* properties.
 # Ported from Godot's thirdparty/misc/ok_color.h (Björn Ottosson, MIT).
 

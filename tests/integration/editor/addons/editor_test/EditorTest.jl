@@ -1,3 +1,6 @@
+# Copyright 2026 Espen Harlinn
+# SPDX-License-Identifier: Apache-2.0
+
 using Godot
 import GodotTestRunner
 
@@ -114,11 +117,27 @@ function run_tests(self::EditorTest)
         end
         check(!Tools.busy(), "build finished")
         probs = Tools.problems()
-        check(any(q -> q.file == "res://Bad.jl" && q.line == 7, probs), "build reports res://Bad.jl:7 ($probs)")
+        check(any(q -> q.file == "res://Bad.jl" && q.line == 10, probs), "build reports res://Bad.jl:10 ($probs)")
         check(Tools.last_build_ok() === false, "build fails on a script error")
         check(isfile(joinpath(dir, "Manifest.toml")), "build instantiated the project environment")
-        check(any(l -> occursin("res://Bad.jl:7", l), Tools.LOG),
+        check(any(l -> occursin("res://Bad.jl:10", l), Tools.LOG),
               "build output streamed to the Julia panel ($(join(Tools.LOG[max(1, end - 12):end], " | ")))")
+        panel = Tools.PANEL[]
+        if panel !== nothing
+            shown = Tools.shown_problem_texts(panel)
+            check(length(shown) == length(probs) && !isempty(shown), "problems view lists the build problems ($shown)")
+            panel.search = "no such problem"
+            Tools.refresh_problems!()
+            check(isempty(Tools.shown_problem_texts(panel)), "problems search filters the view")
+            panel.search = ""
+            panel.show_errors = false
+            Tools.refresh_problems!()
+            check(length(Tools.shown_problem_texts(panel)) == count(q -> q.severity !== :error, probs), "error filter")
+            panel.show_errors = true
+            Tools.refresh_problems!()
+        else
+            check(false, "Julia panel exists in the editor")
+        end
 
         # Built-in script editor: Julia highlighting (Thing.jl) and validation errors (Bad.jl).
         current_code() = Godot.get_base_editor(Godot.get_current_editor(Godot.get_script_editor(EI)))
@@ -127,17 +146,17 @@ function run_tests(self::EditorTest)
         code = current_code()
         highlighter = Godot.get_syntax_highlighter(code)
         Godot.update_cache(highlighter)   # headless editors never draw, so refresh the cache explicitly
-        hl = Godot.get_line_syntax_highlighting(highlighter, 0)
+        hl = Godot.get_line_syntax_highlighting(highlighter, 3)   # using Godot
         color(col) = haskey(hl, col) ? hl[col]["color"] : nothing
         check(Godot.get_class(highlighter) == "JuliaSyntaxHighlighter" && color(0) !== nothing && color(6) !== nothing &&
               color(0) != color(6), "Julia highlighter colors keywords ($hl; $(Godot.get_class(highlighter)))")
-        hl2 = Godot.get_line_syntax_highlighting(highlighter, 2)   # @global_class @icon "res://..." @godot_class mutable
+        hl2 = Godot.get_line_syntax_highlighting(highlighter, 5)   # @global_class @icon "res://..." @godot_class mutable
         check(haskey(hl2, 0) && haskey(hl2, 20) && hl2[20]["color"] != hl2[0]["color"], "macros and strings highlighted ($hl2)")
         Godot.edit_script(EI, Godot.load(Godot.ResourceLoader, "res://Bad.jl"), 1, 0)
         wait_frames(self, 30)
         check(Godot.get_class(Godot.get_syntax_highlighter(current_code())) == "JuliaSyntaxHighlighter",
               "Julia highlighter on script tabs restored from the previous session")
-        check(Godot.get_line_background_color(current_code(), 6).a > 0, "validation error marked on line 7")
+        check(Godot.get_line_background_color(current_code(), 9).a > 0, "validation error marked on line 10")
     catch e
         failed[] += 1
         R.report_exception(e, catch_backtrace())

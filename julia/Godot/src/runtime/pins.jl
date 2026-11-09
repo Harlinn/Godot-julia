@@ -1,3 +1,6 @@
+# Copyright 2026 Espen Harlinn
+# SPDX-License-Identifier: Apache-2.0
+
 # The only way native code may hold on to Julia values (see project conventions on GC safety).
 
 const PINS = Dict{UInt64, Any}()

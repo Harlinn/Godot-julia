@@ -1,3 +1,6 @@
+# Copyright 2026 Espen Harlinn
+# SPDX-License-Identifier: Apache-2.0
+
 # Constructors, destructors and Variant conversions for opaque builtins.
 
 const MAX_VARIANT_TYPES = 64

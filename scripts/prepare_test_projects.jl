@@ -1,4 +1,7 @@
 #!/usr/bin/env julia
+# Copyright 2026 Espen Harlinn
+# SPDX-License-Identifier: Apache-2.0
+
 # Copies addons/godot_julia into every project under tests/integration/ so they can load the built extension.
 
 const ROOT = normpath(joinpath(@__DIR__, ".."))

@@ -1,4 +1,7 @@
 #!/usr/bin/env julia
+# Copyright 2026 Espen Harlinn
+# SPDX-License-Identifier: Apache-2.0
+
 # Regenerates julia/Godot/test/fixtures/math_golden.txt by evaluating math_cases.txt in Godot (GDScript).
 # Usage: julia scripts/make_math_golden.jl   (Godot from GODOT, .tools/godot/, or PATH)
 

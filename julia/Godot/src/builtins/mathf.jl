@@ -1,3 +1,6 @@
+# Copyright 2026 Espen Harlinn
+# SPDX-License-Identifier: Apache-2.0
+
 # Mathf: Godot's scalar math helpers (C#: `Godot.Mathf`, `MathfEx`).
 # Ported from Godot's core/math/math_funcs.h and GodotSharp/Core/Mathf.cs, MathfEx.cs (MIT, Godot contributors).
 # Functions that Julia's Base already provides (sin, sqrt, clamp, sign, abs, floor, ...) are not duplicated.

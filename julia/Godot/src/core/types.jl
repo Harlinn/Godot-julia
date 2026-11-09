@@ -1,3 +1,6 @@
+# Copyright 2026 Espen Harlinn
+# SPDX-License-Identifier: Apache-2.0
+
 # Root types shared by generated and hand-written code.
 
 "Root of the Godot class hierarchy (Godot's `Object`, renamed as in C#)."

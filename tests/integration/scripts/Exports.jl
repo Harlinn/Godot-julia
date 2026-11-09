@@ -1,3 +1,6 @@
+# Copyright 2026 Espen Harlinn
+# SPDX-License-Identifier: Apache-2.0
+
 using Godot
 
 # `Item` is a Julia @global_class: usable by name as a field type without importing it (parity: 5.13).

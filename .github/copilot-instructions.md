@@ -1,4 +1,6 @@
-# Godot + Julia (GodotJL) — Project Instructions
+# Godot + Julia (Godot-julia) — Project Instructions
+
+Repository: https://github.com/Harlinn/Godot-julia (Apache-2.0, see `LICENSE` and `NOTICE`).
 
 ## Goal
 

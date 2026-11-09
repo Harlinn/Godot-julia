@@ -1,3 +1,6 @@
+# Copyright 2026 Espen Harlinn
+# SPDX-License-Identifier: Apache-2.0
+
 using Godot
 using Sockets
 import GodotTestRunner
@@ -51,12 +54,12 @@ function run_tests(self::DebugTest)
         end
         errs = filter(e -> occursin("faulty frame", string(e["rationale"])), take_errors(self))
         check(length(errs) == 3, "three faulty-frame errors (got $(length(errs)))")
-        check(all(e -> string(e["file"]) == "res://Faulty.jl" && Int(e["line"]) == 11 && Int(e["type"]) == ERROR_TYPE_SCRIPT,
-                  errs), "errors are script errors at res://Faulty.jl:11: $(isempty(errs) ? "" : errs[1])")
+        check(all(e -> string(e["file"]) == "res://Faulty.jl" && Int(e["line"]) == 14 && Int(e["type"]) == ERROR_TYPE_SCRIPT,
+                  errs), "errors are script errors at res://Faulty.jl:14: $(isempty(errs) ? "" : errs[1])")
         check(!isempty(errs) && string(errs[1]["code"]) == "faulty frame 1", "description is the error message")
         check(!isempty(errs) && occursin("Stacktrace", string(errs[1]["rationale"])) &&
-              occursin("@ res://Faulty.jl:11", string(errs[1]["rationale"])), "message has the Julia stack trace")
-        check(!isempty(errs) && has_frame(errs[1], "res://Faulty.jl", 11), "Julia frames in the script backtrace")
+              occursin("@ res://Faulty.jl:14", string(errs[1]["rationale"])), "message has the Julia stack trace")
+        check(!isempty(errs) && has_frame(errs[1], "res://Faulty.jl", 14), "Julia frames in the script backtrace")
         wait(next_frame(self))
         check(is_instance_valid(faulty) && faulty.count == 3, "the game keeps running after errors")
 

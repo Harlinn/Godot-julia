@@ -1,3 +1,6 @@
+# Copyright 2026 Espen Harlinn
+# SPDX-License-Identifier: Apache-2.0
+
 # In-engine tests for the generated class bindings. parity: 2.1, 2.2, 2.3, 2.4, 2.5, 2.6, 2.7, 2.9, 2.10, 2.11, 2.12
 using Test
 using GodotTestRunner
@@ -164,7 +167,7 @@ ts = @testset EngineTestSet "bindings" begin
     end
 
     @testset "classes from other extensions" begin
-        # JuliaRuntime is registered by the GodotJL extension itself, so it is absent from the core bindings.
+        # JuliaRuntime is registered by the Godot-julia extension itself, so it is absent from the core bindings.
         @test !haskey(Godot.Internals.CLASS_WRAPPERS, :JuliaRuntime)
         @test has_singleton(Engine, :JuliaRuntime)
         rt = get_singleton(Engine, :JuliaRuntime)

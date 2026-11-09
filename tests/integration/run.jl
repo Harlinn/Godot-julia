@@ -1,4 +1,7 @@
 #!/usr/bin/env julia
+# Copyright 2026 Espen Harlinn
+# SPDX-License-Identifier: Apache-2.0
+
 # Runs every Godot project under tests/integration/ headlessly and checks it.
 # Usage: julia tests/integration/run.jl [--leaks] [project_name...]   (Godot from GODOT, .tools/godot/, or PATH)
 #

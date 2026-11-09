@@ -1,4 +1,7 @@
 #!/usr/bin/env julia
+# Copyright 2026 Espen Harlinn
+# SPDX-License-Identifier: Apache-2.0
+
 # Downloads the pinned Godot editor (GODOT_VERSION) for this OS into .tools/godot/, verified against the release's
 # SHA512-SUMS.txt. With --templates also the export templates archive (used by tests/export/run.jl).
 # Usage: julia scripts/fetch_godot.jl [--templates]
@@ -38,7 +41,12 @@ end
 function main()
     mkpath(DIR)
     zip = fetch(editor_archive())
-    run(pipeline(`$(p7zip_jll.p7zip()) x $zip -o$DIR -y`; stdout = devnull))
+    if Sys.isapple()
+        # ditto keeps the .app bundle intact (symlinks, permissions, code signature).
+        run(`ditto -x -k $zip $DIR`)
+    else
+        run(pipeline(`$(p7zip_jll.p7zip()) x $zip -o$DIR -y`; stdout = devnull))
+    end
     if !Sys.iswindows()
         for f in readdir(DIR; join = true)
             occursin(r"^Godot_v.*\.(x86_64|arm64)$", basename(f)) && chmod(f, 0o755)

@@ -1,7 +1,7 @@
 name = "GodotTestRunner"
 uuid = "7d1c6a52-3f0e-4b8a-9c41-2e5f8b6d0a93"
 version = "0.1.0"
-authors = ["GodotJL contributors"]
+authors = ["Godot-julia contributors"]
 
 [deps]
 Godot = "f37c0048-e111-4823-9dfb-7d6ad2e3f4cb"

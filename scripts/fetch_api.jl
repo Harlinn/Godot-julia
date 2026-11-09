@@ -1,4 +1,7 @@
 #!/usr/bin/env julia
+# Copyright 2026 Espen Harlinn
+# SPDX-License-Identifier: Apache-2.0
+
 # Dumps extension_api.json (with docs) and gdextension_interface.json from the pinned Godot into native/api/.
 # Usage: julia scripts/fetch_api.jl [--project=path/to/project] [path/to/godot]   (or set GODOT)
 # With --project, also writes project_extension_api.json: a dump made with that project's GDExtensions loaded. The

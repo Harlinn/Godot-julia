@@ -59,3 +59,29 @@ Each engine call crosses into C++ (tens of nanoseconds for simple calls, about 1
 ## Threads
 
 Heavy computations (pathfinding, procedural generation) can run on Julia threads (`julia/runtime/threads`) or `WorkerThreadPool` tasks. Post the results to the main thread with `Godot.post`. See [async](julia_async.md).
+
+## Profiling
+
+C# code is profiled with external tools (dotTrace, Visual Studio). Julia's sampling profiler, the `Profile` standard library, runs inside the game: profile a piece of script code and print the report to the Output panel. In a running game you can do the same from the debug REPL ([debugging](julia_debugging.md)), or save the samples and open them with ProfileView.jl or PProf.jl in your own Julia session.
+
+```julia
+using Profile
+
+function busy(n)
+    s = 0.0
+    for i in 1:n
+        s += sqrt(i)
+    end
+    return s
+end
+busy(10)                                # compile first
+Profile.clear()
+total = Ref(0.0)                        # use the results, or the compiler removes the work being profiled
+@profile for _ in 1:200
+    total[] += busy(100_000)
+end
+report = sprint(io -> Profile.print(IOContext(io, :displaysize => (24, 200)); format = :flat, maxdepth = 10))
+@test occursin("busy", report)
+```
+
+`@time` and `@allocated` give quick numbers for a single call; [docs/perf.md](../perf.md) lists measured costs of the engine boundary.

@@ -78,3 +78,12 @@ end
 | `TOOLS` | `@feature(:editor)` |
 | `DEBUG` | `@feature(:debug)` |
 | custom export feature | `@feature(:my_feature)` |
+| `GODOT4_7_OR_GREATER`, `GODOT4_7_2` | `Godot.GODOT_VERSION >= v"4.7"`, `Godot.GODOT_VERSION == v"4.7.2"` |
+| `GODOT_REAL_T_IS_DOUBLE` | `real_t === Float64` |
+
+`Godot.GODOT_VERSION` and `real_t` are constants, so branches on them are resolved when the code is compiled:
+
+```julia
+@test Godot.GODOT_VERSION isa VersionNumber && Godot.GODOT_VERSION >= v"4.7"
+@test real_t in (Float32, Float64) && typeof(Vector2(1, 2).x) === real_t
+```

@@ -1,4 +1,7 @@
-﻿extends Node
+﻿# Copyright 2026 Espen Harlinn
+# SPDX-License-Identifier: Apache-2.0
+
+extends Node
 # Runs test_objects.jl inside the engine; the Julia side prints the GDJL_TEST_RESULT line.
 
 

@@ -1,4 +1,7 @@
-# In-engine tests for object identity, lifetime, casting and dynamic access. parity: 4.1, 4.2, 4.4–4.8
+# Copyright 2026 Espen Harlinn
+# SPDX-License-Identifier: Apache-2.0
+
+# In-engine tests for object identity, lifetime, casting and dynamic access. parity: 3.14, 4.1, 4.2, 4.4–4.8
 using Test
 using GodotTestRunner
 using Godot
@@ -132,6 +135,25 @@ ts = @testset EngineTestSet "objects" begin
         @test_throws ArgumentError get_node(Node, root, "Missing")
         @test get_node_or_null(Node2D, root, "Missing") === nothing
         @test get_node_or_null(Camera2D, root, "S") === nothing
+        # Typed child/parent/owner lookups (C#'s GetChild<T>, GetParentOrNull<T>, ...).
+        @test get_child(Sprite2D, root, 0) === s && get_child(Node2D, root, -1) === s
+        @test_throws TypeError get_child(Camera2D, root, 0)
+        @test get_child_or_null(Sprite2D, root, 0) === s && get_child_or_null(Sprite2D, root, 1) === nothing
+        @test get_child_or_null(Camera2D, root, 0) === nothing
+        @test get_parent(Node, s) === root && get_parent_or_null(Node2D, s) === nothing
+        @test_throws ArgumentError get_parent(Node, root)
+        @test get_owner_or_null(Node, s) === nothing
+        @test_throws ArgumentError get_owner(Node, s)
+        set_owner(s, root)
+        @test get_owner(Node, s) === root && get_owner_or_null(Node, s) === root
+        # Typed scene instantiation (C#'s PackedScene.Instantiate<T> / InstantiateOrNull<T>).
+        scene = PackedScene()
+        pack(scene, root)
+        inst = instantiate(Node, scene)
+        @test inst isa Node && get_child_count(inst) == 1 && get_child(Sprite2D, inst, 0) isa Sprite2D
+        free(inst)
+        @test_throws ArgumentError instantiate(Node2D, scene)
+        @test instantiate_or_null(Node2D, scene) === nothing
         w = weakref(s)
         @test get_ref(w) === s
         free(root)

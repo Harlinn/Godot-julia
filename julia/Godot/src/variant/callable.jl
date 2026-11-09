@@ -1,3 +1,6 @@
+# Copyright 2026 Espen Harlinn
+# SPDX-License-Identifier: Apache-2.0
+
 # Callable and Signal: engine-method callables and callables backed by any Julia callable.
 # Ported from GodotSharp/Core/Callable.cs, Callable.generics.cs (MIT, Godot contributors).
 

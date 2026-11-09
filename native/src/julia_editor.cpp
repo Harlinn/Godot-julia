@@ -1,3 +1,6 @@
+// Copyright 2026 Espen Harlinn
+// SPDX-License-Identifier: Apache-2.0
+
 #include "julia_editor.h"
 
 #include "julia_host.h"
@@ -258,6 +261,7 @@ TypedArray<Dictionary> JuliaExportPlugin::_get_export_options(const Ref<EditorEx
 	TypedArray<Dictionary> options;
 	options.push_back(export_option("julia/export/mode", Variant::STRING, "sysimage", PROPERTY_HINT_ENUM, "sysimage,jit"));
 	options.push_back(export_option("julia/export/include_sources", Variant::BOOL, false));
+	options.push_back(export_option("julia/export/include_debug_symbols", Variant::BOOL, false));
 	return options;
 }
 
@@ -277,6 +281,29 @@ void JuliaExportPlugin::_export_file(const String &p_path, const String &p_type,
 
 void JuliaExportPlugin::_export_end() {
 	call_tools("export_end", this);
+}
+
+// --- JuliaTranslationParserPlugin ---------------------------------------------------------------------------------
+
+TypedArray<PackedStringArray> JuliaTranslationParserPlugin::_parse_file(const String &p_path) {
+	TypedArray<PackedStringArray> r;
+	if (!JuliaHost::get_singleton().is_ready()) {
+		return r;
+	}
+	Variant v = call_tools("translation_parse_file", this, p_path);
+	if (v.get_type() == Variant::ARRAY) {
+		Array a = v;
+		for (int64_t i = 0; i < a.size(); i++) {
+			r.push_back(PackedStringArray(a[i]));
+		}
+	}
+	return r;
+}
+
+PackedStringArray JuliaTranslationParserPlugin::_get_recognized_extensions() const {
+	PackedStringArray r;
+	r.push_back("jl");
+	return r;
 }
 
 // --- JuliaEditorPlugin --------------------------------------------------------------------------------------------
@@ -326,6 +353,8 @@ void JuliaEditorPlugin::_enter_tree() {
 	if (JuliaHost::get_singleton().is_ready()) {
 		export_plugin.instantiate();
 		add_export_plugin(export_plugin);
+		translation_parser.instantiate();
+		add_translation_parser_plugin(translation_parser);
 		call_tools("editor_plugin_enter_tree", this);
 	}
 }
@@ -342,6 +371,10 @@ void JuliaEditorPlugin::_exit_tree() {
 	if (export_plugin.is_valid()) {
 		remove_export_plugin(export_plugin);
 		export_plugin.unref();
+	}
+	if (translation_parser.is_valid()) {
+		remove_translation_parser_plugin(translation_parser);
+		translation_parser.unref();
 	}
 	if (JuliaHost::get_singleton().is_ready()) {
 		call_tools("editor_plugin_exit_tree", this);
@@ -363,6 +396,7 @@ bool JuliaEditorPlugin::_build() {
 void register_editor_types() {
 	GDREGISTER_CLASS(JuliaSyntaxHighlighter);
 	GDREGISTER_INTERNAL_CLASS(JuliaExportPlugin);
+	GDREGISTER_INTERNAL_CLASS(JuliaTranslationParserPlugin);
 	GDREGISTER_INTERNAL_CLASS(JuliaEditorPlugin);
 	EditorPlugins::add_by_type<JuliaEditorPlugin>();
 }

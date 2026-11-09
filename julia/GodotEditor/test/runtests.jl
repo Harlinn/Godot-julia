@@ -1,3 +1,6 @@
+# Copyright 2026 Espen Harlinn
+# SPDX-License-Identifier: Apache-2.0
+
 using Test
 using TOML
 using Godot
@@ -21,6 +24,10 @@ const T = GodotEditor.Tools
         cfg = TOML.parse(text)
         @test cfg["mode"] == "sysimage" && cfg["debug"] === true && cfg["features"] == ["pc", "debug"]
         @test cfg["data_dir"] == "C:\\g\\data \"x\"" && cfg["global_classes"] == Dict("Enemy" => "res://Enemy.jl")
+        @test cfg["debug_symbols"] === false   # julia/export/include_debug_symbols (C#: dotnet/include_debug_symbols). parity: 10.9
+        @test TOML.parse(T.export_config_text(; mode = "sysimage", debug = false, platform = "linux", arch = "x86_64",
+                                              features = String[], data_dir = "/d", global_classes = Dict{String, String}(),
+                                              debug_symbols = true))["debug_symbols"] === true
     end
     @testset "external editor commands" begin
         unix(n) = "/usr/bin/$n"
@@ -88,6 +95,36 @@ const T = GodotEditor.Tools
         @test T.LOG == ["res://B.jl:2:1: error: bad", "==> Validating scripts", "plain output"]
         T.clear_output!()
         @test isempty(T.LOG) && isempty(T.PROBLEMS)
+        # Problems view filters (C#: BuildProblemsView). parity: 8.8
+        ps = [T.Problem(:error, "res://A.jl", 1, 1, "bad thing"), T.Problem(:warning, "res://B.jl", 2, 1, "odd"),
+              T.Problem(:error, "res://A.jl", 5, 2, "worse"), T.Problem(:error, "", 0, 0, "no file")]
+        @test T.visible_problems(ps) == [1, 2, 3, 4]
+        @test T.visible_problems(ps; warnings = false) == [1, 3, 4] && T.visible_problems(ps; errors = false) == [2]
+        @test T.visible_problems(ps; search = "  B.JL ") == [2] && T.visible_problems(ps; search = "wor") == [3]
+        @test T.problem_groups(ps, [1, 2, 3, 4]) == ["res://A.jl" => [1, 3], "res://B.jl" => [2], "" => [4]]
+    end
+
+    # POT generation from .jl scripts (C#: CsTranslationParserPlugin). parity: 8.9
+    @testset "translation strings" begin
+        src = """
+        using Godot
+        function greet(self)
+            tr(self, "Hello")                      # TRANSLATORS: shown on the title screen
+            # TRANSLATORS: menu entry
+            # in the pause menu
+            Godot.tr(self, "Quit", "menu")
+            tr_n(self, "%d apple", "%d apples", 3)
+            atr(self, "Debug only")                # NO_TRANSLATE
+            translate(TranslationServer, "Loading", "ui")
+            tr(self, "dynamic \$(1 + 1)")
+        end
+        """
+        @test T.translation_strings(src) == [
+            ["Hello", "", "", "shown on the title screen", "3"],
+            ["Quit", "menu", "", "menu entry in the pause menu", "6"],
+            ["%d apple", "", "%d apples", "", "7"],
+            ["Loading", "ui", "", "", "9"]]
+        @test T.translation_strings("tr(self, \"x\"") == Vector{String}[]   # incomplete source
     end
 
     @testset "VS Code workspace settings" begin
@@ -149,7 +186,7 @@ const T = GodotEditor.Tools
 
     @testset "bridge handlers installed" begin
         for k in (:editor_plugin_enter_tree, :editor_plugin_exit_tree, :editor_plugin_process, :editor_plugin_build,
-                  :overrides_external_editor, :open_in_external_editor)
+                  :overrides_external_editor, :open_in_external_editor, :translation_parse_file)
             @test haskey(Godot.Runtime.BRIDGE, k)
         end
     end

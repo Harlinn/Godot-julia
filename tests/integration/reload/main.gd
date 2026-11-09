@@ -1,6 +1,9 @@
+# Copyright 2026 Espen Harlinn
+# SPDX-License-Identifier: Apache-2.0
+
 extends Node
 # Hot reload driven like the editor / remote debugger: rewrite res://Mover.jl, then JuliaRuntime.reload_scripts
-# (what the debugger's "reload_scripts" message does). parity: 7.1-7.5
+# (what the debugger's "reload_scripts" message does). parity: 7.1-7.6
 
 const MOVER := "res://Mover.jl"
 
@@ -68,6 +71,7 @@ func _ready() -> void:
 	check(m.call("stats_hits") == 2, "struct declared in the script is transferred")
 	check(m.call("mode_name") == "Run", "enum declared in the script is transferred")
 	check(m.label == "v1", "field value kept over the new initializer")
+	check(m.saved == 200 and m.restored == 201, "_before_reload ran on the old instance, _after_reload on the new one")
 	m.call("step")
 	m.emit_signal("moved", 3)
 	check(m.label == "v2:3", "closure connected by the old version runs the new code on the migrated instance")

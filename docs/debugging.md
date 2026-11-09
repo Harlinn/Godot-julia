@@ -1,6 +1,6 @@
 # Debugging Julia scripts
 
-GodotJL reports Julia errors to Godot the same way C# does, shows Julia frames in Godot's backtraces and script debugger, and adds a debug REPL into the running game.
+Godot-julia reports Julia errors to Godot the same way C# does, shows Julia frames in Godot's backtraces and script debugger, and adds a debug REPL into the running game.
 
 ## Errors and stack traces
 
@@ -27,7 +27,7 @@ Debug builds of a game (not the editor) start a localhost REPL server when one o
 | `julia/debugger/wait_for_attach` or `GDJL_DEBUG_WAIT=1` | Block at startup until a client connects |
 | `julia/debugger/break_on_error` | Pause in Godot's debugger on unhandled errors (default true) |
 
-At startup the game prints `GodotJL: Julia debug server listening on 127.0.0.1:<port>`. To connect:
+At startup the game prints `Godot-julia: Julia debug server listening on 127.0.0.1:<port>`. To connect:
 
 ```
 julia addons/godot_julia/tools/godot_repl.jl 47100

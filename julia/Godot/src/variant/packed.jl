@@ -1,3 +1,6 @@
+# Copyright 2026 Espen Harlinn
+# SPDX-License-Identifier: Apache-2.0
+
 # Packed arrays as AbstractVector, with fast conversions and zero-copy views.
 # Ported from GodotSharp/Core/NativeInterop/Marshaling.cs (packed array marshalling) (MIT, Godot contributors).
 

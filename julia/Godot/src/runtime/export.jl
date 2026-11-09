@@ -1,3 +1,6 @@
+# Copyright 2026 Espen Harlinn
+# SPDX-License-Identifier: Apache-2.0
+
 # Exported games (ADR 0014). An export build evaluates every script into a module inside the process that writes the
 # game's system image (`julia --output-o`), so scripts ship compiled and load by `res://` path without their sources,
 # like C# ships assemblies (GodotTools/Export/ExportPlugin.cs).

@@ -57,7 +57,7 @@ Engine singletons (`Input`, `Engine`, `OS`, `ProjectSettings`, ...) are passed a
 @test is_action_pressed(Input, "ui_accept") == false      # C#: Input.IsActionPressed("ui_accept")
 @test get_frames_drawn(Engine) >= 0
 @test singleton(Engine) === singleton(Engine)
-@test get_setting(ProjectSettings, "application/config/name") == "GodotJL doc tests"
+@test get_setting(ProjectSettings, "application/config/name") == "Godot-julia doc tests"
 ```
 
 ## Global scope functions: `GD`
@@ -100,6 +100,21 @@ v = Vector2(3, 4)
 ```
 
 Builtin structs are immutable values, as in C#. To change one component, build a new value: `node.position = Vector2(node.position.x, 0)`.
+
+## Typed lookups and strings
+
+C#'s generic helpers take the type as the first argument: `GetNode<T>` is `get_node(T, node, path)`, and likewise `get_child(T, node, i)`, `get_parent(T, node)`, `get_owner(T, node)` and `instantiate(T, scene)`. The `OrNull` variants (`get_node_or_null`, `get_child_or_null`, `get_parent_or_null`, `get_owner_or_null`, `instantiate_or_null`) return `nothing` instead of throwing.
+
+Godot's `String` methods work on Julia strings. Where Julia already has the function (`length`, `split`, `replace`, `lpad`, ...), use Julia's. Godot's wildcard `match` is `glob_match`, because `Base.match` is Julia's regex match.
+
+```julia
+root = Node()
+add_child(root, Node2D())
+@test get_child(Node2D, root, 0) isa Node2D && get_child_or_null(Sprite2D, root, 0) === nothing
+@test get_parent(Node, get_child(root, 0)) === root
+free(root)
+@test glob_match("level_03.tscn", "level_*.tscn") && matchn("README.md", "*.MD")
+```
 
 ## Vararg and default arguments
 

@@ -1,3 +1,6 @@
+# Copyright 2026 Espen Harlinn
+# SPDX-License-Identifier: Apache-2.0
+
 # GDArray / GDArray{T} as AbstractVector with reference semantics.
 # Ported from GodotSharp/Core/Array.cs (MIT, Godot contributors).
 
@@ -118,6 +121,8 @@ _duplicate(a::GDArray{T}, deep::Bool) where {T} =
 "Shallow copy (Godot `duplicate()`): a new Array holding the same elements."
 Base.copy(a::GDArray) = _duplicate(a, false)
 Base.deepcopy_internal(a::GDArray, ::IdDict) = _duplicate(a, true)
+"Whether `a` and `b` have equal sizes and (recursively) equal elements (C#: `Array.RecursiveEqual`)."
+recursive_equal(a::GDArray, b::GDArray) = a == b
 
 Base.convert(::Type{GDArray{T}}, v::AbstractVector) where {T} = GDArray{T}(v)
 Base.convert(::Type{GDArray}, v::AbstractVector) = GDArray(v)

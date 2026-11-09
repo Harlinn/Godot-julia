@@ -1,4 +1,7 @@
 #!/usr/bin/env julia
+# Copyright 2026 Espen Harlinn
+# SPDX-License-Identifier: Apache-2.0
+
 # Regenerates julia/Godot/src/generated/ from native/api/ (fetching the API files first if needed).
 # Usage: julia scripts/generate_bindings.jl [--precision=single|double]
 

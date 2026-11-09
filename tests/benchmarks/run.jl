@@ -1,4 +1,7 @@
 #!/usr/bin/env julia
+# Copyright 2026 Espen Harlinn
+# SPDX-License-Identifier: Apache-2.0
+
 # Runs tests/benchmarks/project headlessly and compares each GDJL_BENCH result with baseline.toml.
 # Usage: julia tests/benchmarks/run.jl [--update]    (--update rewrites the baselines for this machine)
 # A benchmark fails when it is slower than baseline × tolerance (default 3: shared CI machines are noisy).

@@ -1,1 +1,1 @@
-GodotJL: Julia 1.
+Godot-julia: Julia 1.

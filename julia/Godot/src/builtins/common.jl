@@ -1,3 +1,6 @@
+# Copyright 2026 Espen Harlinn
+# SPDX-License-Identifier: Apache-2.0
+
 # Scalar math shared by the builtin types and `Mathf`.
 # Ported from Godot's core/math/math_funcs.h and GodotSharp/Core/Mathf.cs, MathfEx.cs (MIT, Godot contributors).
 

@@ -1,3 +1,6 @@
+# Copyright 2026 Espen Harlinn
+# SPDX-License-Identifier: Apache-2.0
+
 # Hot reload: generations, migration, retries. parity: 7.1, 7.2, 7.4, 7.5
 using Test
 using Godot

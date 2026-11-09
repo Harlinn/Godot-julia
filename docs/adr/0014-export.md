@@ -18,6 +18,7 @@ All of this has to work with official, unmodified export templates (ADR 0001).
 - **Export plugin.** The native `JuliaExportPlugin` (`EditorExportPlugin`) is registered by `JuliaEditorPlugin` and forwards `_export_begin`, `_export_file` (only `.jl` files) and `_export_end` to `GodotEditor.Tools` (`tools/export.jl`). Preset options:
   - `julia/export/mode`: `sysimage` (default) or `jit`.
   - `julia/export/include_sources`.
+  - `julia/export/include_debug_symbols` (default off, unlike C#'s `dotnet/include_debug_symbols`): line info in release system images (added by the phase 17 audit).
 - **Payload folder.** `_export_begin` builds `data_<Package>_<platform>_<arch>/` under `.godot/julia_export/` with the worker (`tools/export_build.jl`) in a child process, then adds it with `add_shared_object`. Godot's PC exporter copies shared-object directories next to the executable. The folder contains:
   - `julia/`: runtime libraries plus Base and stdlib sources;
   - `sys.<dll|so|dylib>`: sysimage mode only;
@@ -34,12 +35,13 @@ All of this has to work with official, unmodified export templates (ADR 0001).
   - Scripts whose top-level code needs the running engine (e.g. `const X = load(...)`) cannot be evaluated at build time. They produce an export warning, ship as sources in `scripts/`, and are evaluated at runtime. The JIT remains available.
 - **jit mode (debug only).** Package sources go into `depot/packages/` (inside a depot, so the pkgimages stay valid when the folder moves). Their caches are compiled into `depot/compiled/`, and the default system image is shipped. Script sources stay in the PCK.
 - **Debug vs release.**
-  - Debug images: `-O2 -g1`. The runtime runs at `-O2`, keeping backtraces with `res://` file:line and the debug server and remote debugger, which are already limited to debug builds.
-  - Release images: `-O3 -g0`. The runtime runs at `-O3` and native frames carry no line info.
+  - Debug images: `-O2`. The runtime runs at `-O2`, keeping backtraces with `res://` file:line and the debug server and remote debugger, which are already limited to debug builds.
+  - Release images: `-O3`. The runtime runs at `-O3`.
+  - Line info: debug images always use `-g1`. Release images use `-g0` unless `julia/export/include_debug_symbols` is on, then `-g1`. The default is off, unlike C#, because line info adds about 100 MiB to the payload (822 vs 723 MiB measured for the test game).
 - **Feature tags.** `Godot.has_feature(:tag)` checks at runtime. `Godot.@feature(:tag)` expands to a constant during an export build, using the preset's feature list, so the untaken branch is compiled out like C#'s `#if GODOT_WINDOWS`. Elsewhere it expands to a runtime check. `GodotEditor` is never loaded in exports and is not part of the image.
 - **CPU target.** Images use Julia's multi-versioned default for x86_64 (`generic;sandybridge,…;haswell,…`), and `generic` elsewhere. For tests it can be overridden with `GDJL_EXPORT_CPU_TARGET`.
 - **Host platform only.** The image and runtime are those of the editor's Julia, so a preset for another OS or architecture fails with an explanation. CI exports on each desktop OS. Android, iOS and Web are out of scope.
-- **No `trimmed` mode (`juliac --trim`, the NativeAOT analog).** Trimming requires code that is statically resolvable and free of `eval`. The script runtime defines classes with `Core.eval`, dispatches dynamically on script types and keeps the JIT for scripts that are not compiled in. Parity row 10.6 therefore stays PARTIAL, and `sysimage` is the supported AOT mode.
+- **No `trimmed` mode (`juliac --trim`, the NativeAOT analog).** Trimming requires code that is statically resolvable and free of `eval`. The script runtime defines classes with `Core.eval`, dispatches dynamically on script types and keeps the JIT for scripts that are not compiled in. Parity row 10.6 is therefore a GAP (status changed from PARTIAL by the phase 17 audit), and `sysimage` is the supported AOT mode.
 
 ## Consequences
 

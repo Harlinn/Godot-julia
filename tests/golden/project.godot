@@ -2,4 +2,4 @@
 config_version=5
 
 [application]
-config/name="GodotJL golden values"
+config/name="Godot-julia golden values"

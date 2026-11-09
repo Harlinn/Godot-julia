@@ -1,3 +1,6 @@
+# Copyright 2026 Espen Harlinn
+# SPDX-License-Identifier: Apache-2.0
+
 const INITIALIZED = Ref(false)
 "`GDExtensionClassLibraryPtr` of the native host (needed by some interface functions)."
 const LIBRARY = Ref{Ptr{Cvoid}}(C_NULL)

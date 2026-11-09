@@ -1,3 +1,6 @@
+// Copyright 2026 Espen Harlinn
+// SPDX-License-Identifier: Apache-2.0
+
 #pragma once
 
 // Function tables exchanged between the native host and `Godot.Runtime`; mirrored in julia/Godot/src/runtime/abi.jl.

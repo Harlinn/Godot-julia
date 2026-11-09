@@ -1,3 +1,6 @@
+# Copyright 2026 Espen Harlinn
+# SPDX-License-Identifier: Apache-2.0
+
 using Base.CoreLogging: CoreLogging, AbstractLogger, LogLevel, Info, Warn, Error
 
 "Line-buffered `IO` that forwards complete lines to Godot's `print`/`printerr`."

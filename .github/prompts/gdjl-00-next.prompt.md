@@ -3,7 +3,7 @@ name: gdjl-00-next
 description: "Resume the Godot+Julia implementation: find the next incomplete phase in the C# parity matrix and execute it."
 agent: agent
 ---
-Determine where the Godot+Julia (GodotJL) implementation stands and continue it.
+Determine where the Godot+Julia (Godot-julia) implementation stands and continue it.
 
 1. Read [project instructions](../copilot-instructions.md) and the [parity matrix](../../docs/csharp-parity-matrix.md).
 2. Inspect the repository to verify the matrix is accurate (a row marked `DONE` must have code and a passing test). Correct any stale statuses.

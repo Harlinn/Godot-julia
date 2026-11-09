@@ -1,3 +1,6 @@
+# Copyright 2026 Espen Harlinn
+# SPDX-License-Identifier: Apache-2.0
+
 # Awaiting signals: SignalAwaiter / ToSignal parity. Ported from GodotSharp/Core/SignalAwaiter.cs (MIT, Godot contributors).
 
 "Raised in a task waiting for a signal whose emitting object was freed (C#: a canceled task)."

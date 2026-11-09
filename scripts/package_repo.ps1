@@ -1,3 +1,6 @@
+# Copyright 2026 Espen Harlinn
+# SPDX-License-Identifier: Apache-2.0
+
 <#
 .SYNOPSIS
     Packages every file git would push (tracked + untracked, not ignored) into godotJL-<date>-<NNN>.7z.

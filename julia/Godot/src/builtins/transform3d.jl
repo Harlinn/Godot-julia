@@ -1,3 +1,6 @@
+# Copyright 2026 Espen Harlinn
+# SPDX-License-Identifier: Apache-2.0
+
 # Transform3D (basis + origin).
 # Ported from Godot's core/math/transform_3d.h/.cpp and GodotSharp/Core/Transform3D.cs (MIT, Godot contributors).
 

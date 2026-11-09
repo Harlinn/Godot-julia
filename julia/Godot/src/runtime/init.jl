@@ -1,3 +1,6 @@
+# Copyright 2026 Espen Harlinn
+# SPDX-License-Identifier: Apache-2.0
+
 # @cfunction targets must be defined before the function that takes their address.
 function _eval_string(code::Ptr{UInt8}, len::Int64, ctx::Ptr{Cvoid})::Int32
     @godot_entry Int32(1) begin

@@ -1,7 +1,7 @@
 name = "Godot"
 uuid = "f37c0048-e111-4823-9dfb-7d6ad2e3f4cb"
 version = "0.1.0"
-authors = ["GodotJL contributors"]
+authors = ["Godot-julia contributors"]
 
 [deps]
 LinearAlgebra = "37e2e46d-f89d-539d-b4ee-838fcccc9c8e"

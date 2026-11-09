@@ -1,3 +1,6 @@
+# Copyright 2026 Espen Harlinn
+# SPDX-License-Identifier: Apache-2.0
+
 # GDDictionary / GDDictionary{K, V} as AbstractDict with reference semantics.
 # Ported from GodotSharp/Core/Dictionary.cs (MIT, Godot contributors).
 

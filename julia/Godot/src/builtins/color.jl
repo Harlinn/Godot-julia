@@ -1,3 +1,6 @@
+# Copyright 2026 Espen Harlinn
+# SPDX-License-Identifier: Apache-2.0
+
 # Color (always 32-bit floats, independent of real_t).
 # Ported from Godot's core/math/color.h/.cpp and GodotSharp/Core/Color.cs, Colors.cs (MIT, Godot contributors).
 

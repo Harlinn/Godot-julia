@@ -1,3 +1,6 @@
+# Copyright 2026 Espen Harlinn
+# SPDX-License-Identifier: Apache-2.0
+
 using Godot
 
 # Checks run in the exported game (tests/export/run.jl passes mode/debug as user arguments).

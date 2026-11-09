@@ -1,3 +1,6 @@
+# Copyright 2026 Espen Harlinn
+# SPDX-License-Identifier: Apache-2.0
+
 using Godot
 
 # Dynamic properties through the engine's script callbacks (C#: _Get, _Set, _GetPropertyList, _ValidateProperty).

@@ -1,3 +1,6 @@
+# Copyright 2026 Espen Harlinn
+# SPDX-License-Identifier: Apache-2.0
+
 extends Logger
 # Records every error Godot reports, with the script backtraces (Julia frames come from
 # JuliaLanguage::_debug_get_current_stack_info). Loggers are called from any thread.

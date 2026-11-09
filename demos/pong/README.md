@@ -4,7 +4,7 @@ A simple Pong game. This demo shows best practices
 for game development in Godot, including
 [signals](https://docs.godotengine.org/en/latest/getting_started/step_by_step/signals.html).
 
-Language: Julia ([GodotJL](../../README.md))
+Language: Julia ([Godot-julia](../../README.md))
 
 Renderer: Compatibility
 

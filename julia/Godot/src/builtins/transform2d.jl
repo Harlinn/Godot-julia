@@ -1,3 +1,6 @@
+# Copyright 2026 Espen Harlinn
+# SPDX-License-Identifier: Apache-2.0
+
 # Transform2D (columns x, y and origin).
 # Ported from Godot's core/math/transform_2d.h/.cpp and GodotSharp/Core/Transform2D.cs (MIT, Godot contributors).
 

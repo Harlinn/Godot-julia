@@ -1,3 +1,6 @@
+# Copyright 2026 Espen Harlinn
+# SPDX-License-Identifier: Apache-2.0
+
 # Quaternion.
 # Ported from Godot's core/math/quaternion.h/.cpp and GodotSharp/Core/Quaternion.cs (MIT, Godot contributors).
 

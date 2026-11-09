@@ -1,3 +1,6 @@
+# Copyright 2026 Espen Harlinn
+# SPDX-License-Identifier: Apache-2.0
+
 # Error reporting, debugger queries, debug server. parity: 9.2, 9.5
 using Godot.Runtime: Runtime, HostAPI, ABI_VERSION, DebugState
 import Sockets

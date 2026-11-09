@@ -1,3 +1,6 @@
+# Copyright 2026 Espen Harlinn
+# SPDX-License-Identifier: Apache-2.0
+
 # Bridge handlers of the native JuliaEditorPlugin (native/src/julia_editor.cpp) and the Project → Tools → Julia menu
 # (C#: GodotSharpEditor.cs).
 

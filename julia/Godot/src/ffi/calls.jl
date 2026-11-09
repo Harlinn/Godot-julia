@@ -1,3 +1,6 @@
+# Copyright 2026 Espen Harlinn
+# SPDX-License-Identifier: Apache-2.0
+
 # Method binds, singletons, and the ptrcall / Variant-call paths.
 
 const METHOD_BINDS = Dict{Tuple{Symbol, Symbol, Int64}, Ptr{Cvoid}}()

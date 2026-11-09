@@ -1,3 +1,6 @@
+# Copyright 2026 Espen Harlinn
+# SPDX-License-Identifier: Apache-2.0
+
 # Script instances: the GDExtensionScriptInstanceInfo3 table whose callbacks dispatch into Julia.
 # Analog of CSharpInstance (modules/mono/csharp_script.cpp) and GodotSharp/Core/Bridge/CSharpInstanceBridge.cs
 # (MIT, Godot contributors). Every callback catches exceptions (`@godot_entry`).

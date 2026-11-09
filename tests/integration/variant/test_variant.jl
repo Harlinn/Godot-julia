@@ -1,3 +1,6 @@
+# Copyright 2026 Espen Harlinn
+# SPDX-License-Identifier: Apache-2.0
+
 # In-engine tests for Variant, strings, collections, packed arrays and Callables. parity: 3.4–3.10, 3.12, 3.13
 using Test
 using GodotTestRunner
@@ -105,6 +108,8 @@ ts = @testset EngineTestSet "variant" begin
         @test to_snake_case("HelloWorld") == "hello_world"
         @test begins_with("Godot", "Go") && begins_with(:Godot, "Go")
         @test md5_text("abc") == "900150983cd24fb0d6963f7d28e17f72"
+        @test glob_match("player.jl", "*.jl") && glob_match(:Player, "P?ayer") && !glob_match("Player.jl", "p*")
+        @test matchn("Player.jl", "p*")
         @test num(String, 3.14159, 2) == "3.14"
         @test get_slice("a,b,c", ",", 1) == "b"
         p = NodePath("Path/To/Node:property:sub")
@@ -143,6 +148,8 @@ ts = @testset EngineTestSet "variant" begin
         empty!(b)
         @test isempty(b)
         @test GDArray([1, 2]) == GDArray([1, 2])
+        @test recursive_equal(GDArray([GDArray([1]), "a"]), GDArray([GDArray([1]), "a"]))
+        @test !recursive_equal(GDArray([GDArray([1])]), GDArray([GDArray([2])]))
         @test sum(GDArray([1, 2, 3])) == 6
     end
 

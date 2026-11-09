@@ -1,3 +1,6 @@
+# Copyright 2026 Espen Harlinn
+# SPDX-License-Identifier: Apache-2.0
+
 # Background jobs (builds and Pkg actions) run in a child Julia process polled every frame, so the editor never
 # freezes (C#: GodotTools/Build/BuildManager.cs runs `dotnet build` and streams its output to the MSBuild panel).
 

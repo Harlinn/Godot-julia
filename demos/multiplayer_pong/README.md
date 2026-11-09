@@ -3,7 +3,7 @@
 A multiplayer demo of Pong. One player presses "host".
 The other presses "join". This only works locally.
 
-Language: Julia ([GodotJL](../../README.md))
+Language: Julia ([Godot-julia](../../README.md))
 
 Renderer: Compatibility
 

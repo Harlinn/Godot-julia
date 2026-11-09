@@ -1,3 +1,6 @@
+# Copyright 2026 Espen Harlinn
+# SPDX-License-Identifier: Apache-2.0
+
 # The script bridge entry point (analog of ScriptManagerBridge): JuliaLanguage / JuliaScript (native/src/julia_script.cpp)
 # call `script_call(method, self, args, argc, r_ret)`, dispatched here by method name.
 

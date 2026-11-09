@@ -1,3 +1,6 @@
+# Copyright 2026 Espen Harlinn
+# SPDX-License-Identifier: Apache-2.0
+
 # Generated bindings (no engine). parity: 2.8
 using Godot
 using Godot: Native, Internals

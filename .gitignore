@@ -35,8 +35,9 @@ demos/*/addons/godot_julia/
 demos/*/addons/gdjl_demo_driver/
 demos/*/override.cfg
 
-# Source archives from scripts/package_repo.ps1
-/godotJL-*.7z
+# Source archives from scripts/package_repo.ps1 (and split parts / merge scripts)
+/godotJL-*.7z*
+/merge_godotJL-*.cmd
 
 # Editors / OS
 .tools/
