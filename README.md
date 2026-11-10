@@ -1,12 +1,34 @@
-# Godot-julia — Julia scripting for Godot 4
+# Godot-julia: Julia scripting for Godot 4
 
-Godot-julia makes Julia a scripting language for Godot 4. The goal is feature parity with Godot's C#/.NET support; progress is tracked in [docs/csharp-parity-matrix.md](docs/csharp-parity-matrix.md).
+Godot-julia makes Julia a scripting language for Godot 4. The goal 
+is feature parity with Godot's C#/.NET support; progress is tracked 
+in [docs/csharp-parity-matrix.md](docs/csharp-parity-matrix.md).
 
-It is a GDExtension, so it works with the official Godot editor and export templates. You do not need a special build. See [ADR 0000](docs/adr/0000-gdextension-vs-module.md).
+It is a GDExtension, so it works with the official Godot editor and 
+export templates. You do not need a special build. See [ADR 0000](docs/adr/0000-gdextension-vs-module.md).
 
 ## Status
 
-Phases 01–16 are complete: the native host embeds Julia; the `Godot` package exposes the full generated engine API, builtin math, Variant and collections, and the object model; `.jl` files are Godot scripts with the C# authoring features (exports with every hint, groups, tool buttons, signals, global classes, RPC, static methods, analyzer-style diagnostics); signals take Julia closures, with async/await on signals and `WorkerThreadPool` support; scripts hot-reload with their state; the editor has a Julia Build button and panel, project bootstrap, package management, external editors, templates and syntax highlighting; Julia errors are script errors at `res://` lines with Julia frames in Godot's debugger, plus `Godot.@breakpoint` and a debug REPL (see [docs/debugging.md](docs/debugging.md)); and desktop exports ship the Julia runtime with the scripts compiled into a system image (see [docs/export.md](docs/export.md)). Phase 15's test tooling (one-command runner, in-engine `Test` runner, parity-test check, leak checks, benchmarks) passes locally; its CI and release workflows have not run on GitHub yet. Phase 16 adds the user guide ([docs/user/](docs/user/README.md), one page per C# documentation page, with every example run by the doc tests) and Julia ports of the official C# demos ([demos/](demos/README.md)). See the parity matrix for row-by-row status.
+Phases 01–16 are complete: the native host embeds Julia; the `Godot` 
+package exposes the full generated engine API, builtin math, Variant 
+and collections, and the object model; `.jl` files are Godot scripts 
+with the C# authoring features (exports with every hint, groups, tool 
+buttons, signals, global classes, RPC, static methods, analyzer-style 
+diagnostics); signals take Julia closures, with async/await on signals 
+and `WorkerThreadPool` support; scripts hot-reload with their state; 
+the editor has a Julia Build button and panel, project bootstrap, package 
+management, external editors, templates and syntax highlighting; Julia 
+errors are script errors at `res://` lines with Julia frames in Godot's 
+debugger, plus `Godot.@breakpoint` and a debug REPL (see 
+[docs/debugging.md](docs/debugging.md)); and desktop exports ship the 
+Julia runtime with the scripts compiled into a system image (see 
+[docs/export.md](docs/export.md)). Phase 15's test tooling (one-command runner, 
+in-engine `Test` runner, parity-test check, leak checks, benchmarks) 
+passes locally; its CI and release workflows have not run on GitHub yet. 
+Phase 16 adds the user guide ([docs/user/](docs/user/README.md), one 
+page per C# documentation page, with every example run by the doc tests) and 
+Julia ports of the official C# demos ([demos/](demos/README.md)). See the 
+parity matrix for row-by-row status.
 
 ## Prerequisites
 
@@ -44,9 +66,16 @@ Libraries go into `addons/godot_julia/bin/`.
 julia scripts/fetch_api.jl [path/to/godot]   # or set GODOT
 ```
 
-This writes `extension_api.json` (with class docs) and `gdextension_interface.json` to `native/api/`. If no Godot binary is found, the script falls back to the copies bundled with godot-cpp, which do not include class docs.
+This writes `extension_api.json` (with class docs) and `gdextension_interface.json` 
+to `native/api/`. If no Godot binary is found, the script falls back to the 
+copies bundled with godot-cpp, which do not include class docs.
 
-To get typed bindings for classes registered by other GDExtensions (as C# does), dump from a project that loads them and regenerate: `julia scripts/fetch_api.jl --project=path/to/project`. This also writes `native/api/project_extension_api.json`, and the generator adds that file's extension classes to the engine API. Without regenerating, objects of such classes are still reachable by name (`get_singleton(Engine, :Name)`, `Godot.call(obj, :method)`) and are wrapped as their nearest known ancestor class.
+To get typed bindings for classes registered by other GDExtensions (as C# does), 
+dump from a project that loads them and regenerate: `julia scripts/fetch_api.jl --project=path/to/project`. 
+This also writes `native/api/project_extension_api.json`, and the generator 
+adds that file's extension classes to the engine API. Without regenerating, 
+objects of such classes are still reachable by name (`get_singleton(Engine, :Name)`, `Godot.call(obj, :method)`) 
+and are wrapped as their nearest known ancestor class.
 
 ## Generating the Julia bindings
 
@@ -55,7 +84,13 @@ julia scripts/generate_bindings.jl                     # single precision (defau
 julia scripts/generate_bindings.jl --precision=double  # for double-precision Godot builds
 ```
 
-This writes `julia/Godot/src/generated/` and `julia/GodotEditor/src/generated/` (both gitignored). It contains the GDExtension interface table and wrappers, the builtin layout for the chosen build configuration, the method-hash table, and the full engine API (`classes.jl`, `globals.jl`). It also writes `binding_report.txt`, which lists counts and every renamed identifier. Run it again after changing `GODOT_VERSION`. The integration test runner generates the bindings automatically if they are missing.
+This writes `julia/Godot/src/generated/` and `julia/GodotEditor/src/generated/` 
+(both gitignored). It contains the GDExtension interface table and wrappers, 
+the builtin layout for the chosen build configuration, the method-hash table, 
+and the full engine API (`classes.jl`, `globals.jl`). It also writes 
+`binding_report.txt`, which lists counts and every renamed identifier. Run it 
+again after changing `GODOT_VERSION`. The integration test runner generates 
+the bindings automatically if they are missing.
 
 The generated API follows [ADR 0003](docs/adr/0003-generated-api-shape.md). In short:
 
@@ -88,11 +123,18 @@ r = Resource(); finalize(r)                  # Dispose(): drop Julia's reference
 helper.score; set!(helper, :score, 3); Godot.call(helper, :add, 1)   # members of GDScript (or any) scripts
 ```
 
-Threading rules: the same engine rules apply as in C# (scene tree on the main thread, resources and servers as documented by Godot). Wrapping and creating objects from several Julia threads is safe. Finalizers never call Godot; they queue releases that run on the main thread. Set the Julia thread count with the `julia/runtime/threads` project setting.
+Threading rules: the same engine rules apply as in C# (scene tree 
+on the main thread, resources and servers as documented by Godot). 
+Wrapping and creating objects from several Julia threads is safe. 
+Finalizers never call Godot; they queue releases that run on the 
+main thread. Set the Julia thread count with the `julia/runtime/threads` 
+project setting.
 
 ### Scripts
 
-A script file `Player.jl` defines one class named after the file ([ADR 0008](docs/adr/0008-script-language.md)). Attach it to a node in the editor or in a `.tscn` like any script:
+A script file `Player.jl` defines one class named after the file 
+([ADR 0008](docs/adr/0008-script-language.md)). Attach it to a node 
+in the editor or in a `.tscn` like any script:
 
 ```julia
 using Godot
@@ -113,9 +155,17 @@ function take_damage(self::Player, amount::Int)    # callable from GDScript: pla
 end
 ```
 
-Engine callbacks are methods of Godot's functions (`Godot._ready`, `Godot._process`, `Godot._input`, `Godot._notification`, `Godot._get`, `Godot._set`, ...). Callbacks a script does not define are not reported to the engine, as with C#. Inherit from another script with `@godot_class mutable struct Boss <: script_type("res://Player.jl")`, or by name if the base is a `@global_class`. Prefix with `@tool`, `@global_class` or `@icon "res://icon.svg"` for the C# `[Tool]`, `[GlobalClass]` and `[Icon]` attributes. `Player()` creates a scripted object from Julia (C#'s `new Player()`). Syntax and load errors are reported as `res://Player.jl:<line>: ...`.
+Engine callbacks are methods of Godot's functions (`Godot._ready`, `Godot._process`, 
+`Godot._input`, `Godot._notification`, `Godot._get`, `Godot._set`, ...). Callbacks 
+a script does not define are not reported to the engine, as with C#. Inherit from 
+another script with `@godot_class mutable struct Boss <: script_type("res://Player.jl")`, 
+or by name if the base is a `@global_class`. Prefix with `@tool`, `@global_class` or 
+`@icon "res://icon.svg"` for the C# `[Tool]`, `[GlobalClass]` and `[Icon]` attributes. 
+`Player()` creates a scripted object from Julia (C#'s `new Player()`). Syntax and 
+load errors are reported as `res://Player.jl:<line>: ...`.
 
-Export annotations and the other C# attributes ([ADR 0009](docs/adr/0009-script-authoring.md)); arguments are a tuple after a space:
+Export annotations and the other C# attributes ([ADR 0009](docs/adr/0009-script-authoring.md)); 
+arguments are a tuple after a space:
 
 ```julia
 @tool @global_class @godot_class mutable struct Turret <: Node2D
@@ -182,7 +232,8 @@ The editor tools ([ADR 0012](docs/adr/0012-editor-integration.md)) mirror C#'s G
 
 ## Running the tests
 
-Everything CI runs, with one command (needs Julia, SCons + a C++ toolchain, and a Godot editor binary; `julia scripts/fetch_godot.jl [--templates]` downloads the pinned one into `.tools/godot/`):
+Everything CI runs, with one command (needs Julia, SCons + a C++ toolchain, and 
+a Godot editor binary; `julia scripts/fetch_godot.jl [--templates]` downloads the pinned one into `.tools/godot/`):
 
 ```sh
 julia scripts/test_all.jl                 # build native/, bindings, unit tests, parity check, integration + leak checks, doc tests, demos
